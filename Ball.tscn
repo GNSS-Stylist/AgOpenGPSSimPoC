@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://3qqfiul1a8kp"]
+
+[ext_resource type="Texture2D" uid="uid://uplgpc76dgei" path="res://icon.svg" id="1_vf34f"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_848ds"]
+radius = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pbiag"]
+albedo_color = Color(0, 1, 0.0901961, 1)
+albedo_texture = ExtResource("1_vf34f")
+uv1_scale = Vector3(5, 5, 5)
+
+[sub_resource type="SphereMesh" id="SphereMesh_4h2xe"]
+radius = 1.0
+height = 2.0
+radial_segments = 8
+rings = 8
+
+[node name="Ball" type="RigidBody3D"]
+mass = 300.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_848ds")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_pbiag")
+mesh = SubResource("SphereMesh_4h2xe")

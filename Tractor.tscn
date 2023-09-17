@@ -1,0 +1,173 @@
+[gd_scene load_steps=17 format=3 uid="uid://lu5qhovxhghx"]
+
+[ext_resource type="Script" path="res://Tractor.gd" id="1_4n646"]
+[ext_resource type="PackedScene" uid="uid://bgr7tghp1588c" path="res://GNSSAntenna.tscn" id="2_oiutr"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_6v250"]
+size = Vector3(1.2, 1.8, 1.2)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5w6pd"]
+points = PackedVector3Array(-0.6, -0.9, -0.6, -0.6, -0.9, 0.6, -0.6, 0.9, -0.6, 0.6, -0.9, -0.6, 0.6, -0.9, 0.6, -0.6, 0.9, 0.6, 0.6, 0.9, -0.6, 0.6, 0.9, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ufptr"]
+size = Vector3(0.6, 0.8, 1.5)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_ufc0b"]
+points = PackedVector3Array(-0.3, -0.4, -0.75, 0.3, -0.4, -0.75, -0.3, -0.4, 0.75, -0.3, 0.4, -0.75, 0.3, 0.4, -0.75, 0.3, -0.4, 0.75, -0.3, 0.4, 0.75, 0.3, 0.4, 0.75)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_aqvo6"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1qe50"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("FastNoiseLite_aqvo6")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t76u5"]
+albedo_color = Color(0.423529, 0.423529, 0.423529, 1)
+albedo_texture = SubResource("NoiseTexture2D_1qe50")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_mcso2"]
+top_radius = 0.75
+bottom_radius = 0.75
+height = 0.4
+radial_segments = 16
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3quke"]
+albedo_color = Color(0.423529, 0.423529, 0.423529, 1)
+albedo_texture = SubResource("NoiseTexture2D_1qe50")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gl313"]
+albedo_color = Color(0.423529, 0.423529, 0.423529, 1)
+albedo_texture = SubResource("NoiseTexture2D_1qe50")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qm0do"]
+top_radius = 0.4
+bottom_radius = 0.4
+height = 0.3
+radial_segments = 16
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kp41p"]
+albedo_color = Color(0.423529, 0.423529, 0.423529, 1)
+albedo_texture = SubResource("NoiseTexture2D_1qe50")
+uv1_scale = Vector3(2, 2, 2)
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_2ck6b"]
+size = Vector3(10, 0.3, 0.1)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_krycv"]
+points = PackedVector3Array(5, 0.15, 0.05, 5, 0.15, -0.05, -5, 0.15, 0.05, 5, -0.15, 0.05, 5, -0.15, -0.05, -5, 0.15, -0.05, -5, -0.15, 0.05, -5, -0.15, -0.05)
+
+[node name="Tractor" type="VehicleBody3D"]
+transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 0, 0, 0)
+mass = 3000.0
+center_of_mass_mode = 1
+center_of_mass = Vector3(0, 0, 1)
+engine_force = 10000.0
+steering = 0.698132
+script = ExtResource("1_4n646")
+
+[node name="Mesh_Cab" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.4)
+mesh = SubResource("BoxMesh_6v250")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.4)
+shape = SubResource("ConvexPolygonShape3D_5w6pd")
+
+[node name="Mesh_Nose" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.75)
+mesh = SubResource("BoxMesh_ufptr")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.75)
+shape = SubResource("ConvexPolygonShape3D_ufc0b")
+
+[node name="VehicleWheel_RearLeft" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0)
+engine_force = 10000.0
+use_as_traction = true
+wheel_radius = 0.75
+wheel_rest_length = 0.05
+wheel_friction_slip = 1.0
+suspension_travel = 0.1
+suspension_stiffness = 100.0
+suspension_max_force = 100000.0
+damping_compression = 0.99
+damping_relaxation = 1.0
+
+[node name="Mesh_Wheel_RearLeft" type="MeshInstance3D" parent="VehicleWheel_RearLeft"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_t76u5")
+mesh = SubResource("CylinderMesh_mcso2")
+
+[node name="VehicleWheel_RearRight" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+engine_force = 10000.0
+use_as_traction = true
+wheel_radius = 0.75
+wheel_rest_length = 0.05
+wheel_friction_slip = 1.0
+suspension_travel = 0.1
+suspension_stiffness = 100.0
+suspension_max_force = 100000.0
+damping_compression = 0.99
+damping_relaxation = 1.0
+
+[node name="Mesh_Wheel_RearLeft" type="MeshInstance3D" parent="VehicleWheel_RearRight"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_3quke")
+mesh = SubResource("CylinderMesh_mcso2")
+
+[node name="VehicleWheel_FrontLeft" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.3, 2.26)
+steering = 0.698132
+use_as_steering = true
+wheel_radius = 0.4
+wheel_friction_slip = 10.0
+suspension_travel = 0.5
+suspension_stiffness = 100.0
+suspension_max_force = 60000.0
+damping_compression = 0.9
+damping_relaxation = 1.0
+
+[node name="Mesh_Wheel_FrontLeft" type="MeshInstance3D" parent="VehicleWheel_FrontLeft"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_gl313")
+mesh = SubResource("CylinderMesh_qm0do")
+
+[node name="VehicleWheel_FrontRight" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, -0.3, 2.26)
+steering = 0.698132
+use_as_steering = true
+wheel_radius = 0.4
+wheel_friction_slip = 10.0
+suspension_travel = 0.5
+suspension_stiffness = 100.0
+suspension_max_force = 60000.0
+damping_compression = 0.9
+damping_relaxation = 1.0
+
+[node name="Mesh_Wheel_FrontRight" type="MeshInstance3D" parent="VehicleWheel_FrontRight"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_kp41p")
+mesh = SubResource("CylinderMesh_qm0do")
+
+[node name="GNSSAntenna" parent="." instance=ExtResource("2_oiutr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 1.58, -0.28)
+
+[node name="Implement" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+mesh = SubResource("BoxMesh_2ck6b")
+
+[node name="CollisionShape_Implement" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+shape = SubResource("ConvexPolygonShape3D_krycv")

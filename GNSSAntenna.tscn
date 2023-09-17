@@ -1,0 +1,45 @@
+[gd_scene load_steps=3 format=3 uid="uid://bgr7tghp1588c"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q7tys"]
+albedo_color = Color(0.156863, 0.156863, 0.156863, 1)
+roughness = 0.49
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a15ji"]
+albedo_color = Color(0.784314, 0.784314, 0.784314, 1)
+roughness = 0.35
+
+[node name="GNSSAntenna" type="Node3D"]
+
+[node name="ScaledCSGThingies" type="Node3D" parent="."]
+transform = Transform3D(0.01, 0, 0, 0, 0.01, 0, 0, 0, 0.01, 0, 0, 0)
+
+[node name="Base" type="CSGCombiner3D" parent="ScaledCSGThingies"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+material_override = SubResource("StandardMaterial3D_q7tys")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="ScaledCSGThingies/Base"]
+radius = 7.0
+height = 4.0
+sides = 24
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="ScaledCSGThingies/Base"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.54, 0)
+operation = 2
+inner_radius = 0.001
+outer_radius = 15.0
+sides = 24
+ring_sides = 24
+
+[node name="Dome" type="CSGCombiner3D" parent="ScaledCSGThingies"]
+transform = Transform3D(1, 0, 0, 0, 0.2, 0, 0, 0, 1, 0, 4, 0)
+material_override = SubResource("StandardMaterial3D_a15ji")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="ScaledCSGThingies/Dome"]
+radius = 7.0
+radial_segments = 24
+rings = 24
+
+[node name="CSGBox3D" type="CSGBox3D" parent="ScaledCSGThingies/Dome"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5.21, 0)
+operation = 2
+size = Vector3(20, 10, 20)
