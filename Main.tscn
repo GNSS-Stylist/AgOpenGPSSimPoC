@@ -172,6 +172,9 @@ transform = Transform3D(-1, 4.28408e-08, -9.68575e-08, 0, 0.906308, 0.422618, 1.
 [node name="Camera_Angled" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
 
+[node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
+
 [node name="StaticBox" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
 material_override = SubResource("StandardMaterial3D_gycji")
@@ -186,13 +189,12 @@ shape = SubResource("ConvexPolygonShape3D_wwbtj")
 environment = SubResource("Environment_27gc0")
 
 [node name="Panel_LocationOrientation" type="Panel" parent="."]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -231.0
-offset_right = 1.0
-offset_bottom = 186.0
-grow_horizontal = 0
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -186.0
+offset_right = 232.0
+grow_vertical = 0
 
 [node name="Label_Latitude" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0

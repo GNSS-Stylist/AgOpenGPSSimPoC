@@ -45,8 +45,8 @@ func updateTerrainCollisionShape():
 	shape.map_depth = heightMapImage.get_height()
 	shape.map_data = data
 	collisionShape.shape = shape
-	var scale = 1000/float(heightMapImage.get_width())
-	collisionShape.scale = Vector3(scale, 1, scale)
+	var scaleVal = 1000/float(heightMapImage.get_width())
+	collisionShape.scale = Vector3(scaleVal, 1, scaleVal)
 
 var accumDelta:float = 0
 var terrainCollisionShapeUpdated:bool = false
@@ -116,6 +116,8 @@ func cameraSwitch():
 		$Tractor/Camera_Follow.current = true
 	elif (Input.is_action_just_pressed("camera_tractor_angled")):
 		$Tractor/Camera_Angled.current = true
+	elif (Input.is_action_just_pressed("camera_tractor_angled_2")):
+		$Tractor/Camera_Angled_2.current = true
 		
 func updateLocationOrientation():
 	$Panel_LocationOrientation/Label_Latitude_Value.text = "%1.7f N" % $Tractor.latitude
