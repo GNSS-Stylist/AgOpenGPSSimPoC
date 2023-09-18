@@ -114,6 +114,8 @@ func cameraSwitch():
 		$Tractor/Camera_Driver.current = true
 	elif (Input.is_action_just_pressed("camera_tractor_follow")):
 		$Tractor/Camera_Follow.current = true
+	elif (Input.is_action_just_pressed("camera_tractor_angled")):
+		$Tractor/Camera_Angled.current = true
 		
 func updateLocationOrientation():
 	$Panel_LocationOrientation/Label_Latitude_Value.text = "%1.7f N" % $Tractor.latitude

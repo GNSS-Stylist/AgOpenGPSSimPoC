@@ -1,5 +1,5 @@
 # AgOpenGPSSimPoC
-Proof of concept simulator ("digital twin") made with Godot game engine for AgOpenGPS.
+Proof of concept simulator ("digital twin"?) made with Godot game engine for AgOpenGPS.
 
 Uses Godot game engine (and it's physics engine) to simulate tractor's behavior in a virtual world. Steering commands are received from and latitude/longitude/height/heading/roll/etc are sent to AgOpenGPS (or actually AgIO) using UDP-protocol. From the AgOpenGPS' (AgIO's) perspective this basically emulates All-In-One-board's (V4.1) UDP-communication as implemented in teensy-code. This emulation, however, implements only minimum set of features to get this working somehow (as this is just a PoC after all).
 
@@ -8,7 +8,7 @@ Made with Godot version 4.1.1, which you can download here: https://downloads.tu
 You can drive around the virtual world using keys and UI-controls in the left upper corner.
 
 Controls:
-- I,J,K,L: control tractor's speed and steering
+- W,S,A,D: control tractor's speed and steering
 - Space: Set tractor's target speed to 0 and steering straight
 - Enter: Engage/disengage automatic steering
 - F1: Switch to "First person flyer" camera (use CTRL to activate/deactivate mouse look)
@@ -16,7 +16,7 @@ Controls:
 - F3: Switch to tractor driver's view
 - F12: Full screen toggle
 - CTRL: Activate/deactivate mouse look for "First person flyer" camera. This needs to be deactivated before you can use your mouse for other purposes again.
-- W,S,A,D & Q,E (& R,F for roll if using 6 dof-mode): Fly around with the "First person flyer" camera
+- U,H,J,K & Y,I (& O,L for roll if using 6 dof-mode): Fly around with the "First person flyer" camera
 - Tab: Switch between "FPS" and "6 dof" flying modes (for "First person flyer" camera)
 - Mouse wheel & plus & minus keys: Change flying speed of "First person flyer" camera
 - B: Create a new 300 kg ball (physics object)

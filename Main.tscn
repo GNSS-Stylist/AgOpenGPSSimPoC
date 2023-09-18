@@ -1,11 +1,13 @@
-[gd_scene load_steps=18 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=21 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
 [ext_resource type="PackedScene" uid="uid://be3msxv4st7e1" path="res://FirstPersonFlyer/FirstPersonFlyer.tscn" id="3_82cgc"]
 [ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor.tscn" id="4_tsqja"]
+[ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
+seed = 3
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dnqro"]
 width = 100
@@ -37,6 +39,10 @@ size = Vector2(1000, 1000)
 subdivide_width = 100
 subdivide_depth = 100
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gycji"]
+albedo_texture = ExtResource("5_7utf1")
+uv1_triplanar = true
+
 [sub_resource type="BoxMesh" id="BoxMesh_qhte3"]
 size = Vector3(10, 1, 10)
 
@@ -51,6 +57,10 @@ sky_material = SubResource("ProceduralSkyMaterial_v3qjp")
 [sub_resource type="Environment" id="Environment_27gc0"]
 background_mode = 2
 sky = SubResource("Sky_wky0i")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqdkg"]
+albedo_texture = ExtResource("5_7utf1")
+uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_nryma"]
 size = Vector3(20, 20, 20)
@@ -146,10 +156,11 @@ transform = Transform3D(1, 0, 0, 0, 0.862576, 0.505928, 0, -0.505928, 0.862576, 
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 42, 10)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.73341, -0.35231, -0.581367, 0, -0.85522, 0.518266, -0.679787, -0.380101, -0.627226, 0, 120.613, 0.0153999)
+transform = Transform3D(-1, 8.74228e-08, 0, -7.35672e-08, -0.841511, 0.54024, 4.72293e-08, 0.54024, 0.841511, 0, 120.613, 0.0153999)
+shadow_enabled = true
 
 [node name="Tractor" parent="." instance=ExtResource("4_tsqja")]
-transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 0, 40.8306, 0)
+transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 0, 19.5076, 0)
 
 [node name="Camera_Follow" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-1, 3.96891e-08, -7.78943e-08, 0, 0.891006, 0.45399, 8.74228e-08, 0.45399, -0.891006, 0, 8.15, -6.021)
@@ -158,8 +169,12 @@ current = true
 [node name="Camera_Driver" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-1, 4.28408e-08, -9.68575e-08, 0, 0.906308, 0.422618, 1.04308e-07, 0.422618, -0.906308, 0, 1.229, 1.107)
 
+[node name="Camera_Angled" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
+
 [node name="StaticBox" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 39.6262, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
+material_override = SubResource("StandardMaterial3D_gycji")
 mesh = SubResource("BoxMesh_qhte3")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="StaticBox"]
@@ -267,13 +282,14 @@ offset_top = 156.0
 offset_right = 210.0
 offset_bottom = 179.0
 
-[node name="Pyramid" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.302292, 0.262332, -0.916407, 0.532182, 0.751154, 0.390576, 0, 29.7342, 24.7912)
+[node name="Ramp" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
+material_override = SubResource("StandardMaterial3D_mqdkg")
 mesh = SubResource("BoxMesh_nryma")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Pyramid"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Ramp"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pyramid/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp/StaticBody3D"]
 transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
 shape = SubResource("ConvexPolygonShape3D_w5fvs")
 

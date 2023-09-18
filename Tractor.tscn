@@ -1,13 +1,17 @@
-[gd_scene load_steps=17 format=3 uid="uid://lu5qhovxhghx"]
+[gd_scene load_steps=20 format=3 uid="uid://lu5qhovxhghx"]
 
 [ext_resource type="Script" path="res://Tractor.gd" id="1_4n646"]
 [ext_resource type="PackedScene" uid="uid://bgr7tghp1588c" path="res://GNSSAntenna.tscn" id="2_oiutr"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a5qe7"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_6v250"]
 size = Vector3(1.2, 1.8, 1.2)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_5w6pd"]
 points = PackedVector3Array(-0.6, -0.9, -0.6, -0.6, -0.9, 0.6, -0.6, 0.9, -0.6, 0.6, -0.9, -0.6, 0.6, -0.9, 0.6, -0.6, 0.9, 0.6, 0.6, 0.9, -0.6, 0.6, 0.9, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_312yt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_ufptr"]
 size = Vector3(0.6, 0.8, 1.5)
@@ -60,6 +64,8 @@ albedo_texture = SubResource("NoiseTexture2D_1qe50")
 uv1_scale = Vector3(2, 2, 2)
 uv1_triplanar = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lmns3"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_2ck6b"]
 size = Vector3(10, 0.3, 0.1)
 
@@ -77,6 +83,7 @@ script = ExtResource("1_4n646")
 
 [node name="Mesh_Cab" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.4)
+material_override = SubResource("StandardMaterial3D_a5qe7")
 mesh = SubResource("BoxMesh_6v250")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -85,6 +92,7 @@ shape = SubResource("ConvexPolygonShape3D_5w6pd")
 
 [node name="Mesh_Nose" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 1.75)
+material_override = SubResource("StandardMaterial3D_312yt")
 mesh = SubResource("BoxMesh_ufptr")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
@@ -166,6 +174,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.97, 1.58, -0.28)
 
 [node name="Implement" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+material_override = SubResource("StandardMaterial3D_lmns3")
 mesh = SubResource("BoxMesh_2ck6b")
 
 [node name="CollisionShape_Implement" type="CollisionShape3D" parent="."]
