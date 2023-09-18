@@ -5,7 +5,6 @@ extends Node3D
 
 var udpServer:UDPServer
 var clientPeer:PacketPeerUDP
-var clientPeer_Broadcast:PacketPeerUDP
 var peers = []
 
 const udpServerPort:int = 8888
@@ -19,10 +18,6 @@ func _ready():
 	clientPeer = PacketPeerUDP.new()
 	clientPeer.set_broadcast_enabled(true)
 	clientPeer.set_dest_address("192.168.5.10", udpDestPort)
-
-	clientPeer_Broadcast = PacketPeerUDP.new()
-	clientPeer_Broadcast.set_broadcast_enabled(true)
-	clientPeer_Broadcast.set_dest_address("255.255.255.255", 9999)
 
 	udpServer = UDPServer.new()
 	
@@ -162,7 +157,7 @@ func _physics_process(delta):
 		paogi += "\r\n"
 		clientPeer.put_packet(paogi.to_ascii_buffer())
 
-#		print(paogi)
+#		print("sent: " + paogi)
 
 #		var dummyPacket:String = "$PAOGI,133048.80,6250.0839939,N,02504.6965874,E,4,12,0.70,206.646,0.8,0.019,207.24,-3.98,,*"
 #		var checksum = getNMEAChecksum(dummyPacket)
