@@ -173,4 +173,4 @@ common/physics_ticks_per_second=100
 
 [rendering]
 
-scaling_3d/scale=2.0
+renderer/rendering_method="gl_compatibility"
