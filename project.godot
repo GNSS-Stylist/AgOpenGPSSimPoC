@@ -170,7 +170,3 @@ steer_switch={
 [physics]
 
 common/physics_ticks_per_second=100
-
-[rendering]
-
-scaling_3d/scale=2.0
