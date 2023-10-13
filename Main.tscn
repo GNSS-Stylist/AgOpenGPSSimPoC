@@ -73,7 +73,7 @@ script = ExtResource("1_5mcwj")
 
 [node name="Panel_Controls" type="Panel" parent="."]
 offset_right = 402.0
-offset_bottom = 134.0
+offset_bottom = 177.0
 
 [node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
 layout_mode = 0
@@ -140,6 +140,19 @@ offset_right = 176.0
 offset_bottom = 127.0
 disabled = true
 text = "Automatic steering"
+
+[node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="Panel_Controls"]
+layout_mode = 0
+offset_top = 122.0
+offset_right = 270.0
+offset_bottom = 153.0
+text = "Debug message prints (receive)"
+
+[node name="CheckBox_DebugMessage_Send" type="CheckBox" parent="Panel_Controls"]
+offset_top = 147.0
+offset_right = 251.0
+offset_bottom = 178.0
+text = "Debug message prints (send)"
 
 [node name="Terrain" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_77m2g")
