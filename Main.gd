@@ -8,6 +8,8 @@ var clientPeer:PacketPeerUDP
 var peers = []
 
 const udpServerPort:int = 8888
+
+const udpDestAddress:String = "192.168.5.10"
 const udpDestPort:int = 9999
 
 # Called when the node enters the scene tree for the first time.
@@ -17,7 +19,7 @@ func _ready():
 
 	clientPeer = PacketPeerUDP.new()
 	clientPeer.set_broadcast_enabled(true)
-	clientPeer.set_dest_address("192.168.5.10", udpDestPort)
+	clientPeer.set_dest_address(udpDestAddress, udpDestPort)
 
 	udpServer = UDPServer.new()
 	
@@ -154,10 +156,12 @@ func _physics_process(delta):
 
 		var checksum = getNMEAChecksum(paogi)
 		paogi += checksum
+
+		if ($Panel_Controls/CheckBox_DebugMessage_Send. is_pressed()):
+			print("Uptime: %1.3f s, IP: %s, port: %d: sent msg: %s" % [float(Time.get_ticks_msec() / 1000.0), udpDestAddress, udpDestPort, paogi])
+
 		paogi += "\r\n"
 		clientPeer.put_packet(paogi.to_ascii_buffer())
-
-#		print("sent: " + paogi)
 
 #		var dummyPacket:String = "$PAOGI,133048.80,6250.0839939,N,02504.6965874,E,4,12,0.70,206.646,0.8,0.019,207.24,-3.98,,*"
 #		var checksum = getNMEAChecksum(dummyPacket)
@@ -184,6 +188,8 @@ func handleUDPComms():
 	for peer in peers:
 		var packet:PackedByteArray = peer.get_packet()
 		
+		var packetDescription:String = "(Not handled)"
+		
 #		print("Received data: %s" % [packet.hex_encode()])
 		
 		if (packet.size() > 4 && (packet[0] == 0x80) && (packet[1] == 0x81) && (packet[2] == 0x7F)):
@@ -196,7 +202,7 @@ func handleUDPComms():
 				var steerAngleSetpoint:float = ((int(packet.decode_u8(8) | (packet.decode_s8(9)) << 8))) * 0.01
 				var guidanceStatus:int = packet[7];
 
-#				print("Received steer command, setpoint: %1.2f, guidance status: %d" % [steerAngleSetpoint, guidanceStatus])
+				packetDescription = "Steer command, setpoint: %1.2f, guidance status: %d" % [steerAngleSetpoint, guidanceStatus]
 				
 				if (guidanceStatus != 0):
 					$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = true
@@ -238,7 +244,7 @@ func handleUDPComms():
 				
 			elif (packet[3] == 200):
 				# Hello from AgIO
-#				print("Received hello")
+				packetDescription = "Hello"
 				var helloFromAutoSteer:PackedByteArray = [ 0x80, 0x81, 126, 126, 5, 0, 0, 0, 0, 0, 71 ]
 
 				# Steer angle
@@ -270,12 +276,12 @@ func handleUDPComms():
 				
 			elif (packet[3] == 202):
 				# Whoami
-				print("Received whoami")
+				packetDescription = "Whoami"
 				
 				if (packet[4] == 3 && packet[5] == 202 && packet[6] == 202):
 					var Eth_myip:PackedByteArray = [192, 168, 5, 126]
 					var rem_ip:PackedByteArray = [ 192, 168, 5, 10]
-					var scanReply = [ 128, 129, Eth_myip[3], 203, 7,
+					var scanReply:PackedByteArray = [ 128, 129, Eth_myip[3], 203, 7,
 						Eth_myip[0], Eth_myip[1], Eth_myip[2], Eth_myip[3], 
 						rem_ip[0],rem_ip[1],rem_ip[2], 23 ]
 
@@ -287,8 +293,14 @@ func handleUDPComms():
 					scanReply[scanReply.size() - 1] = ck_a;
 #					clientPeer_Broadcast.put_packet(scanReply)
 					peer.put_packet(scanReply)
-#			else:
-#				print("Unhandled packet type %d (0x%X)" % [packet[3], packet[3]])
+			else:
+				packetDescription = "Unhandled packet type %d (0x%X), length: %d" % [packet[3], packet[3], packet.size()]
+			
+			if ($Panel_Controls/CheckBox_DebugMessage_Receive. is_pressed()):
+				var sourceIP:String = peer.get_packet_ip()
+				var sourcePort:int = peer.get_packet_port()
+				print("Uptime: %1.3f s, IP: %s, port: %d, got msg: %s" % [float(Time.get_ticks_msec() / 1000.0), sourceIP, sourcePort, packetDescription])
+		
 		
 #		peers.append(peer)
 		
