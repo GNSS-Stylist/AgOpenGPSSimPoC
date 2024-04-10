@@ -43,4 +43,8 @@ func _physics_process(delta):
 	altitude = globalOrigin.y
 	
 	heading = rad_to_deg(atan2(self.global_transform.basis.z.x, -self.global_transform.basis.z.z))
+	
+#	while (heading < 0):
+#		heading += 360
+	
 	roll = rad_to_deg(asin(self.global_transform.basis.x.y))

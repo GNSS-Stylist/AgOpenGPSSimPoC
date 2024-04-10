@@ -1,8 +1,9 @@
-[gd_scene load_steps=21 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=24 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
 [ext_resource type="PackedScene" uid="uid://be3msxv4st7e1" path="res://FirstPersonFlyer/FirstPersonFlyer.tscn" id="3_82cgc"]
+[ext_resource type="Texture2D" uid="uid://cd625u6i65jr0" path="res://Assets/Fields_4096x4096.png" id="3_h3exi"]
 [ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor.tscn" id="4_tsqja"]
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
 
@@ -25,19 +26,28 @@ noise = SubResource("FastNoiseLite_00ssp")
 render_priority = 0
 shader = ExtResource("2_qqamv")
 shader_parameter/heightMultiplier = 62.445
-shader_parameter/insideFieldAlbedo = Color(0, 1, 0.121569, 1)
-shader_parameter/outsideFieldAlbedo = Color(1, 1, 1, 1)
-shader_parameter/textureScale = Vector2(10, 10)
-shader_parameter/fieldRadius = 0.1
+shader_parameter/terrainTextureScale = Vector2(10, 10)
 shader_parameter/gridDist = 0.01
 shader_parameter/gridWidth = 0.02
+shader_parameter/edgeRise = 10.0
 shader_parameter/heightmap = SubResource("NoiseTexture2D_dnqro")
 shader_parameter/terrainTexture = SubResource("NoiseTexture2D_vtqow")
+shader_parameter/fieldsTexture = ExtResource("3_h3exi")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_hg4uv"]
 size = Vector2(1000, 1000)
 subdivide_width = 100
 subdivide_depth = 100
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqdkg"]
+albedo_texture = ExtResource("5_7utf1")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_nryma"]
+size = Vector3(20, 20, 20)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_w5fvs"]
+points = PackedVector3Array(10, 10, 10, 10, 10, -10, -10, 10, 10, 10, -10, 10, 10, -10, -10, -10, 10, -10, -10, -10, 10, -10, -10, -10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gycji"]
 albedo_texture = ExtResource("5_7utf1")
@@ -58,30 +68,29 @@ sky_material = SubResource("ProceduralSkyMaterial_v3qjp")
 background_mode = 2
 sky = SubResource("Sky_wky0i")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqdkg"]
-albedo_texture = ExtResource("5_7utf1")
-uv1_triplanar = true
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bxulg"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0, 1, 1, 0.254902)
 
-[sub_resource type="BoxMesh" id="BoxMesh_nryma"]
-size = Vector3(20, 20, 20)
-
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_w5fvs"]
-points = PackedVector3Array(10, 10, 10, 10, 10, -10, -10, 10, 10, 10, -10, 10, 10, -10, -10, -10, 10, -10, -10, -10, 10, -10, -10, -10)
+[sub_resource type="PlaneMesh" id="PlaneMesh_3bo1e"]
+size = Vector2(20, 20)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_5mcwj")
 
 [node name="Panel_Controls" type="Panel" parent="."]
-offset_right = 402.0
-offset_bottom = 177.0
+offset_right = 436.0
+offset_bottom = 241.0
 
 [node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
 layout_mode = 0
 offset_left = 130.0
-offset_right = 330.0
+offset_right = 372.0
 offset_bottom = 26.0
 min_value = -45.0
 max_value = 45.0
+step = 0.1
 tick_count = 5
 ticks_on_borders = true
 
@@ -104,63 +113,117 @@ horizontal_alignment = 2
 layout_mode = 0
 offset_left = 130.0
 offset_top = 32.0
-offset_right = 330.0
+offset_right = 372.0
 offset_bottom = 58.0
-min_value = -30.0
-max_value = 30.0
+min_value = -24.0
+max_value = 24.0
+step = 0.1
 tick_count = 5
 ticks_on_borders = true
 
 [node name="Label_SteerAngle_Value" type="Label" parent="Panel_Controls"]
 layout_mode = 0
-offset_left = 350.0
-offset_right = 390.0
+offset_left = 382.0
+offset_right = 422.0
 offset_bottom = 26.0
 text = "0"
 
 [node name="Label_TargetSpeed_Value" type="Label" parent="Panel_Controls"]
 layout_mode = 0
-offset_left = 350.0
+offset_left = 382.0
 offset_top = 32.0
-offset_right = 390.0
+offset_right = 422.0
 offset_bottom = 58.0
 text = "0"
 
 [node name="Button_ResetSteerAngleAndSpeed" type="Button" parent="Panel_Controls"]
 layout_mode = 0
 offset_top = 64.0
-offset_right = 51.0
+offset_right = 366.0
 offset_bottom = 95.0
-text = "Reset manual angle and speed"
+text = "Reset manual angle and speed (when using keyboard)"
 
 [node name="CheckBox_AutomaticSteering" type="CheckBox" parent="Panel_Controls"]
 layout_mode = 0
-offset_top = 96.0
+offset_top = 120.0
 offset_right = 176.0
-offset_bottom = 127.0
+offset_bottom = 151.0
 disabled = true
 text = "Automatic steering"
 
 [node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="Panel_Controls"]
 layout_mode = 0
-offset_top = 122.0
+offset_top = 145.0
 offset_right = 270.0
-offset_bottom = 153.0
+offset_bottom = 176.0
 text = "Debug message prints (receive)"
 
 [node name="CheckBox_DebugMessage_Send" type="CheckBox" parent="Panel_Controls"]
-offset_top = 147.0
+layout_mode = 0
+offset_top = 170.0
 offset_right = 251.0
-offset_bottom = 178.0
+offset_bottom = 201.0
 text = "Debug message prints (send)"
+
+[node name="CheckBox_ShowJoystickSettings" type="CheckBox" parent="Panel_Controls"]
+layout_mode = 0
+offset_top = 195.0
+offset_right = 326.0
+offset_bottom = 226.0
+text = "Show joystick / steering wheel settings"
+
+[node name="Label_MaxSpeed" type="Label" parent="Panel_Controls"]
+layout_mode = 0
+offset_top = 100.0
+offset_right = 40.0
+offset_bottom = 123.0
+text = "Max speed (km/h):"
+
+[node name="SpinBox_MaxSpeed" type="SpinBox" parent="Panel_Controls"]
+layout_mode = 0
+offset_left = 148.0
+offset_top = 96.0
+offset_right = 242.0
+offset_bottom = 127.0
+min_value = 1.0
+max_value = 300.0
+value = 24.0
 
 [node name="Terrain" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_77m2g")
+cast_shadow = 0
 mesh = SubResource("PlaneMesh_hg4uv")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Terrain"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/StaticBody3D"]
+
+[node name="Obstacles" type="Node3D" parent="."]
+process_mode = 4
+visible = false
+
+[node name="Ramp" type="MeshInstance3D" parent="Obstacles"]
+transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
+material_override = SubResource("StandardMaterial3D_mqdkg")
+mesh = SubResource("BoxMesh_nryma")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/Ramp"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/Ramp/StaticBody3D"]
+transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_w5fvs")
+
+[node name="StaticBox" type="MeshInstance3D" parent="Obstacles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
+material_override = SubResource("StandardMaterial3D_gycji")
+mesh = SubResource("BoxMesh_qhte3")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/StaticBox"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/StaticBox/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_wwbtj")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.862576, 0.505928, 0, -0.505928, 0.862576, 0, 173.442, 162.833)
@@ -188,18 +251,14 @@ transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.7
 [node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
 
-[node name="StaticBox" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
-material_override = SubResource("StandardMaterial3D_gycji")
-mesh = SubResource("BoxMesh_qhte3")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="StaticBox"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBox/StaticBody3D"]
-shape = SubResource("ConvexPolygonShape3D_wwbtj")
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_27gc0")
+
+[node name="GapBox" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.994543, 0.104326, -0.00113117, -0.104068, 0.99119, -0.0819307, -0.0074263, 0.0816013, 0.996637, 0, 21.4747, -94.1141)
+visible = false
+material_override = SubResource("StandardMaterial3D_bxulg")
+mesh = SubResource("PlaneMesh_3bo1e")
 
 [node name="Panel_LocationOrientation" type="Panel" parent="."]
 anchors_preset = 2
@@ -221,6 +280,7 @@ layout_mode = 0
 offset_left = 110.0
 offset_right = 210.0
 offset_bottom = 23.0
+horizontal_alignment = 2
 
 [node name="Label_Longitude" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -236,6 +296,7 @@ offset_left = 110.0
 offset_top = 32.0
 offset_right = 210.0
 offset_bottom = 55.0
+horizontal_alignment = 2
 
 [node name="Label_Altitude" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -251,6 +312,7 @@ offset_left = 110.0
 offset_top = 64.0
 offset_right = 210.0
 offset_bottom = 87.0
+horizontal_alignment = 2
 
 [node name="Label_Heading" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -266,6 +328,7 @@ offset_left = 110.0
 offset_top = 96.0
 offset_right = 210.0
 offset_bottom = 119.0
+horizontal_alignment = 2
 
 [node name="Label_Roll" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -281,6 +344,7 @@ offset_left = 110.0
 offset_top = 128.0
 offset_right = 210.0
 offset_bottom = 151.0
+horizontal_alignment = 2
 
 [node name="Label_Speed" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -296,18 +360,198 @@ offset_left = 110.0
 offset_top = 156.0
 offset_right = 210.0
 offset_bottom = 179.0
+horizontal_alignment = 2
 
-[node name="Ramp" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
-material_override = SubResource("StandardMaterial3D_mqdkg")
-mesh = SubResource("BoxMesh_nryma")
+[node name="Panel_JoystickFFBSettings" type="Panel" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -446.0
+offset_bottom = 186.0
+grow_horizontal = 0
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Ramp"]
+[node name="CheckBox_JoystickAngle" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 1.0
+offset_right = 323.0
+offset_bottom = 32.0
+text = "Use joystick / steering wheel for angle"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp/StaticBody3D"]
-transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_w5fvs")
+[node name="CheckBox_JoystickSpeed" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 26.0
+offset_right = 324.0
+offset_bottom = 57.0
+text = "Use joystick / pedals for speed control"
+
+[node name="CheckBox_JoystickReverse" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 51.0
+offset_right = 340.0
+offset_bottom = 82.0
+text = "Joystick / pedal driving direction reverse
+"
+
+[node name="CheckBox_AutoSteeringFFB" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 76.0
+offset_right = 296.0
+offset_bottom = 107.0
+text = "Automatic steering force feedback"
+
+[node name="CheckBox_UseSteeringWheelangleForAutoSteeringAngle" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 100.0
+offset_right = 417.0
+offset_bottom = 131.0
+text = "Use steering wheel position for wheel angle (auto)"
+
+[node name="Label_Force" type="Label" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 154.0
+offset_right = 177.0
+offset_bottom = 180.0
+text = "Force feedback force:"
+horizontal_alignment = 2
+
+[node name="Label_Force_Value" type="Label" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 386.0
+offset_top = 154.0
+offset_right = 427.0
+offset_bottom = 180.0
+text = "0.00
+"
+horizontal_alignment = 2
+
+[node name="HSlider_Force" type="HSlider" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 180.0
+offset_top = 159.0
+offset_right = 381.0
+offset_bottom = 175.0
+min_value = -1.0
+max_value = 1.0
+step = 0.01
+editable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="CheckBox_ShowSteerSettings" type="CheckBox" parent="Panel_JoystickFFBSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 125.0
+offset_right = 26.0
+offset_bottom = 149.0
+text = "Show steer settings"
+
+[node name="Panel_SteerSettings" type="Panel" parent="."]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -322.0
+offset_top = -204.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="GridContainer_SteerSettings" type="GridContainer" parent="Panel_SteerSettings"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 330.0
+offset_bottom = 106.0
+columns = 3
+
+[node name="Label_Title" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "SteerSettings"
+
+[node name="Label_Local" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Local"
+
+[node name="Label_received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Received"
+
+[node name="Label_PGain" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Proportional gain"
+
+[node name="SpinBox_PGain_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+value = 40.0
+rounded = true
+
+[node name="Label_PGain_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_MaximumLimit" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Maximum limit"
+
+[node name="SpinBox_MaximumLimit_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+rounded = true
+
+[node name="Label_MaximumLimit_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_MinimumToMove" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Minimum to move"
+
+[node name="SpinBox_MinimumToMove_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+rounded = true
+
+[node name="Label_MinimumToMove_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_ParametersToUse" type="Label" parent="Panel_SteerSettings"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 143.0
+offset_right = 155.0
+offset_bottom = 169.0
+text = "Parameters to use:"
+
+[node name="OptionButton_ParametersToUse" type="OptionButton" parent="Panel_SteerSettings"]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 140.0
+offset_right = 313.0
+offset_bottom = 171.0
+item_count = 2
+selected = 0
+popup/item_0/text = "Local"
+popup/item_0/id = 0
+popup/item_1/text = "Received"
+popup/item_1/id = 1
+
+[node name="Label_TimeSinceParamsReceived" type="Label" parent="Panel_SteerSettings"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 172.0
+offset_right = 306.0
+offset_bottom = 198.0
+text = "Time since received: Not received"
 
 [connection signal="value_changed" from="Panel_Controls/HSlider_SteerAngle" to="." method="_on_h_slider_steer_angle_value_changed"]
 [connection signal="value_changed" from="Panel_Controls/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
 [connection signal="pressed" from="Panel_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
+[connection signal="value_changed" from="Panel_Controls/SpinBox_MaxSpeed" to="." method="_on_spin_box_max_speed_value_changed"]
