@@ -114,25 +114,90 @@ func _process(_delta):
 	
 	$Panel_JoystickFFBSettings.visible = $Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed
 	$Panel_SteerSettings.visible = $Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed && $Panel_JoystickFFBSettings/CheckBox_ShowSteerSettings.button_pressed
+	$Tractor.hideObstacles = $Panel_Controls/CheckBox_HideObstacles.button_pressed
 	
 	if (steerSettings_ReceivedUpTime_ms != 0):
 		var timeElapsed:float = (Time.get_ticks_msec() - steerSettings_ReceivedUpTime_ms) * 0.001
 		$Panel_SteerSettings/Label_TimeSinceParamsReceived.text = "Time since received: %1.1f s" % timeElapsed
 	else:
 		$Panel_SteerSettings/Label_TimeSinceParamsReceived.text = "Time since received: not received"
-	
+
+const camera_InterpolationTime_Fast = 500
+const camera_InterpolationTime_Slow = 2000
+var camera_Interpolating:bool = false
+var camera_InterpolationFraction:float = 0
+var camera_InterpolationTime:int = 2000
+var camera_InterpolateFrom:Camera3D
+var camera_InterpolateTo:Camera3D
+var camera_InterpolationStartTime:int = 0
+
 func cameraSwitch():
+	var newCamera:Camera3D = null
+	var uptime:int = Time.get_ticks_msec()
+
+	# Default fast interpolation
+	camera_InterpolationTime = camera_InterpolationTime_Fast
+	
 	if (Input.is_action_just_pressed("camera_flyer")):
 		$FirstPersonFlyer.set_LocationOrientation(self.transform.affine_inverse() * get_viewport().get_camera_3d().get_global_transform())
-		$FirstPersonFlyer/Head/FirstPersonCamera.current = true
+		newCamera = $FirstPersonFlyer/Head/FirstPersonCamera
 	elif (Input.is_action_just_pressed("camera_tractor_driver")):
-		$Tractor/Camera_Driver.current = true
+		newCamera = $Tractor/Camera_Driver
 	elif (Input.is_action_just_pressed("camera_tractor_follow")):
-		$Tractor/Camera_Follow.current = true
+		newCamera = $Camera_Follow
 	elif (Input.is_action_just_pressed("camera_tractor_angled")):
-		$Tractor/Camera_Angled.current = true
+		newCamera = $Tractor/Camera_Angled
 	elif (Input.is_action_just_pressed("camera_tractor_angled_2")):
-		$Tractor/Camera_Angled_2.current = true
+		newCamera = $Tractor/Camera_Angled_2
+	elif (Input.is_action_just_pressed("camera_tractor_back_fixed")):
+		newCamera = $Tractor/Camera_Back_Fixed
+	if false:	
+		if Input.is_action_just_pressed("camera_memory_store"):
+			var memCamera = get_node("MemoryCamera")
+			var sourceCamera = get_viewport().get_camera()
+			var sourceCameraGlobal = get_viewport().get_camera().get_global_transform()
+			memCamera.global_transform = sourceCameraGlobal
+			memCamera.near = sourceCamera.near
+			memCamera.far = sourceCamera.far
+			memCamera.fov = sourceCamera.fov
+		if Input.is_action_just_pressed("camera_memory_recall"):
+			newCamera = get_node("MemoryCamera")
+			camera_InterpolationTime = camera_InterpolationTime_Slow
+
+	if (newCamera):
+		var oldCamera:Camera3D = get_viewport().get_camera_3d()
+		if (newCamera == oldCamera):
+			# Nothing to do really
+			newCamera.current = true
+			camera_Interpolating = false
+		elif (camera_Interpolating):
+			# Quick change on double press
+			newCamera.current = true
+			camera_Interpolating = false
+		else:
+			# Otherwise start interpolating
+			camera_InterpolateFrom = oldCamera
+			camera_InterpolateTo = newCamera
+			camera_InterpolationStartTime = uptime
+			camera_Interpolating = true
+	
+	if (camera_Interpolating):
+		var currentFraction:float = smoothstep(camera_InterpolationStartTime, camera_InterpolationStartTime + camera_InterpolationTime, uptime)
+		if (currentFraction >= 1):
+			camera_InterpolateTo.current = true
+			camera_Interpolating = false
+		else:
+			var currentPosition:Vector3 = camera_InterpolateFrom.global_transform.origin.lerp(camera_InterpolateTo.global_transform.origin, currentFraction)
+			# Use quaternion slerp for smooth interpolation of rotation
+			var currentOrientation:Quaternion = camera_InterpolateFrom.global_transform.basis.slerp(camera_InterpolateTo.global_transform.basis, currentFraction)
+			var currentNear = camera_InterpolateFrom.near + (camera_InterpolateTo.near - camera_InterpolateFrom.near) * currentFraction
+			var currentFar = camera_InterpolateFrom.far + (camera_InterpolateTo.far - camera_InterpolateFrom.far) * currentFraction
+			var currentFov = camera_InterpolateFrom.fov + (camera_InterpolateTo.fov - camera_InterpolateFrom.fov) * currentFraction
+			$CameraSwitchCamera.global_transform = Transform3D(currentOrientation, currentPosition)
+			$CameraSwitchCamera.near = currentNear
+			$CameraSwitchCamera.far = currentFar
+			$CameraSwitchCamera.fov = currentFov
+			$CameraSwitchCamera.current = true
 
 var filteredSpeed:float = 0
 const speedFilterCoeff:float = 0.05
@@ -148,7 +213,7 @@ func updateLocationOrientation(delta:float):
 	$Panel_LocationOrientation/Label_Speed_Value.text = "%1.1f" % filteredSpeed
 
 func _on_h_slider_steer_angle_value_changed(value):
-	$Panel_Controls/Label_SteerAngle_Value.text = "%1.1f" % value
+	$Panel_Controls/Label_SteerAngle_Value.text = "%1.2f" % value
 
 func _on_h_slider_target_speed_value_changed(value):
 	$Panel_Controls/Label_TargetSpeed_Value.text = "%1.1f" % value

@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=26 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://cd625u6i65jr0" path="res://Assets/Fields_4096x4096.png" id="3_h3exi"]
 [ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor.tscn" id="4_tsqja"]
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
+[ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
+[ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
 seed = 3
@@ -81,7 +83,7 @@ script = ExtResource("1_5mcwj")
 
 [node name="Panel_Controls" type="Panel" parent="."]
 offset_right = 436.0
-offset_bottom = 241.0
+offset_bottom = 252.0
 
 [node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
 layout_mode = 0
@@ -90,7 +92,7 @@ offset_right = 372.0
 offset_bottom = 26.0
 min_value = -45.0
 max_value = 45.0
-step = 0.1
+step = 0.01
 tick_count = 5
 ticks_on_borders = true
 
@@ -189,6 +191,13 @@ min_value = 1.0
 max_value = 300.0
 value = 24.0
 
+[node name="CheckBox_HideObstacles" type="CheckBox" parent="Panel_Controls"]
+layout_mode = 0
+offset_top = 220.0
+offset_right = 294.0
+offset_bottom = 251.0
+text = "Hide obstacles (from driver's view)"
+
 [node name="Terrain" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_77m2g")
 cast_shadow = 0
@@ -199,8 +208,6 @@ mesh = SubResource("PlaneMesh_hg4uv")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/StaticBody3D"]
 
 [node name="Obstacles" type="Node3D" parent="."]
-process_mode = 4
-visible = false
 
 [node name="Ramp" type="MeshInstance3D" parent="Obstacles"]
 transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
@@ -235,21 +242,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 42, 10)
 transform = Transform3D(-1, 8.74228e-08, 0, -7.35672e-08, -0.841511, 0.54024, 4.72293e-08, 0.54024, 0.841511, 0, 120.613, 0.0153999)
 shadow_enabled = true
 
-[node name="Tractor" parent="." instance=ExtResource("4_tsqja")]
-transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 0, 19.5076, 0)
-
-[node name="Camera_Follow" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-1, 3.96891e-08, -7.78943e-08, 0, 0.891006, 0.45399, 8.74228e-08, 0.45399, -0.891006, 0, 8.15, -6.021)
-current = true
-
-[node name="Camera_Driver" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-1, 4.28408e-08, -9.68575e-08, 0, 0.906308, 0.422618, 1.04308e-07, 0.422618, -0.906308, 0, 1.229, 1.107)
-
-[node name="Camera_Angled" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
-
-[node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
+[node name="Tractor_Old" parent="." instance=ExtResource("4_tsqja")]
+transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 32.5336, 20.1141, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_27gc0")
@@ -503,6 +497,7 @@ text = "Maximum limit"
 [node name="SpinBox_MaximumLimit_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
 layout_mode = 2
 max_value = 255.0
+value = 255.0
 rounded = true
 
 [node name="Label_MaximumLimit_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
@@ -550,6 +545,34 @@ offset_top = 172.0
 offset_right = 306.0
 offset_bottom = 198.0
 text = "Time since received: Not received"
+
+[node name="Tractor" parent="." instance=ExtResource("7_4dsvj")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 18.8345, 0)
+
+[node name="Camera_Back_Fixed" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, 4.44611e-08, -7.56415e-08, 1.05492e-08, 0.916775, 0.399405, 8.71042e-08, 0.399405, -0.916775, 0, 5.14463, -6.10679)
+
+[node name="Camera_Driver" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, 5.00403e-08, -9.20214e-08, 1.41722e-08, 0.935067, 0.35447, 1.03784e-07, 0.35447, -0.935067, 6.77984e-09, 2.49752, -0.600662)
+
+[node name="Camera_Angled" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
+
+[node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
+
+[node name="CameraSwitchCamera" type="Camera3D" parent="."]
+
+[node name="Camera_Follow" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.980727, 0.195381, 0, -0.195381, 0.980727, 0, 21.6734, 7.23756)
+top_level = true
+current = true
+script = ExtResource("8_sbtcx")
+min_distance = 7.0
+max_distance = 10.0
+angle_v_adjust = 13.555
+height = 4.455
+node_to_follow = NodePath("../Tractor")
 
 [connection signal="value_changed" from="Panel_Controls/HSlider_SteerAngle" to="." method="_on_h_slider_steer_angle_value_changed"]
 [connection signal="value_changed" from="Panel_Controls/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
