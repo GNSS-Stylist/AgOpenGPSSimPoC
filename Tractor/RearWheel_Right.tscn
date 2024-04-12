@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://3pwoou83rshw"]
+
+[ext_resource type="PackedScene" uid="uid://c420x55xhr2nj" path="res://Assets/Models/Tractor/RearRim_Inner_gltf/RearRim_Inner.gltf" id="1_bqsik"]
+[ext_resource type="PackedScene" uid="uid://24lcoysunvny" path="res://Assets/Models/Tractor/RearRim_Outer_gltf/RearRim_Outer.gltf" id="2_gb6l1"]
+[ext_resource type="PackedScene" uid="uid://dhtikq1i1x00y" path="res://Assets/Models/Tractor/RearTire_gltf/RearTire.gltf" id="3_4yf7s"]
+
+[node name="RearWheel_Right" type="Node3D"]
+
+[node name="RearRim_Inner" parent="." instance=ExtResource("1_bqsik")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.195, 0, 0)
+
+[node name="RearRim_Outer" parent="." instance=ExtResource("2_gb6l1")]
+transform = Transform3D(0.96, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="RearTire" parent="." instance=ExtResource("3_4yf7s")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
