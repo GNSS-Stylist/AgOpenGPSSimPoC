@@ -9,7 +9,7 @@ extends Camera3D
 @export var node_to_follow:NodePath
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
+func _process(_delta):
 	var target = get_node(node_to_follow).get_global_transform().origin
 	var pos = get_global_transform().origin
 
