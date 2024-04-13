@@ -215,6 +215,8 @@ cast_shadow = 0
 mesh = SubResource("PlaneMesh_hg4uv")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Terrain"]
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/StaticBody3D"]
 
@@ -227,6 +229,8 @@ mesh = SubResource("BoxMesh_nryma")
 skeleton = NodePath("../..")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/Ramp"]
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/Ramp/StaticBody3D"]
 transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
@@ -239,6 +243,8 @@ mesh = SubResource("BoxMesh_qhte3")
 skeleton = NodePath("../..")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/StaticBox"]
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/StaticBox/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_wwbtj")
@@ -573,6 +579,9 @@ transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.7
 
 [node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
+
+[node name="Camera_Up" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 20, 0)
 
 [node name="CameraSwitchCamera" type="Camera3D" parent="."]
 

@@ -103,9 +103,12 @@ func _process(_delta):
 		# get_shader_parameter-function gives sensible values before
 		# using them in updateTerrainCollisionShape
 		# (updateTerrainCollisionShape does not work when called from _ready)
+		# This may be actually unsafe to call outside _physics_process,
+		# But there this fails, since no frames are necessarily drawn before
 		updateTerrainCollisionShape()
 		terrainCollisionShapeUpdated = true
-	
+		teleportTractor($Tractor.global_transform.origin)
+
 	if (Input.is_action_just_pressed("full_screen_toggle")):
 		if (DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN):
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -153,6 +156,8 @@ func cameraSwitch():
 		newCamera = $Tractor/Camera_Angled_2
 	elif (Input.is_action_just_pressed("camera_tractor_back_fixed")):
 		newCamera = $Tractor/Camera_Back_Fixed
+	elif (Input.is_action_just_pressed("camera_tractor_up")):
+		newCamera = $Tractor/Camera_Up
 	if false:	
 		if Input.is_action_just_pressed("camera_memory_store"):
 			var memCamera = get_node("MemoryCamera")
@@ -335,19 +340,7 @@ func _physics_process(delta):
 	handleForceFeedback($Panel_JoystickFFBSettings/CheckBox_AutoSteeringFFB.button_pressed)
 
 	if (Input.is_action_just_pressed("teleport_tractor")):
-		var space_state = get_world_3d().direct_space_state
-		var params:PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
-		var teleportDestPreferredOrigin:Vector3 = $FirstPersonFlyer/ManipulatorMeshes/ManipulatorTip.global_position
-		params.from = teleportDestPreferredOrigin + Vector3(0, 100, 0)
-		params.to = teleportDestPreferredOrigin + Vector3(0, -100, 0)
-		var result = space_state.intersect_ray(params)
-		var teleportDestCoords = teleportDestPreferredOrigin
-		if (!result.is_empty()):
-			teleportDestCoords = result.position + Vector3(0, 0.5, 0)
-		var tractorNode:VehicleBody3D = $Tractor
-		tractorNode.global_transform.origin = teleportDestCoords
-#		tractorNode.global_transform.basis = Basis.IDENTITY
-		tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
+		teleportTractor($FirstPersonFlyer/ManipulatorMeshes/ManipulatorTip.global_position)
 
 func handleUDPComms():
 	# Note: PAOGI is handled separately (in _physics_process) to keep sending of it more precise
@@ -723,3 +716,20 @@ func _on_button_close_3_rd_party_credits_pressed():
 
 func _on_button_show_3_rd_party_assets_pressed():
 	$Panel_3rdPartyCredits.visible = true
+
+# Moves (teleports) tractor to destination coords so that it will be moved
+# just above the ground level
+func teleportTractor(destCoords:Vector3):
+	var space_state = get_world_3d().direct_space_state
+	var params:PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
+	params.from = destCoords + Vector3(0, 1000, 0)
+	params.to = destCoords + Vector3(0, -1000, 0)
+	params.collision_mask = 2	# Collide only to terrain
+	var result = space_state.intersect_ray(params)
+	var teleportDestCoords = destCoords
+	if (!result.is_empty()):
+		teleportDestCoords = result.position + Vector3(0, 0.5, 0)
+	var tractorNode:VehicleBody3D = $Tractor
+	tractorNode.global_transform.origin = teleportDestCoords
+	tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
+	
