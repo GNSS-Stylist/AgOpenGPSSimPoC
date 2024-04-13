@@ -1,6 +1,6 @@
 [gd_scene load_steps=20 format=3 uid="uid://lu5qhovxhghx"]
 
-[ext_resource type="Script" path="res://Tractor.gd" id="1_4n646"]
+[ext_resource type="Script" path="res://Tractor_Old/Tractor_Old.gd" id="1_4n646"]
 [ext_resource type="PackedScene" uid="uid://bgr7tghp1588c" path="res://GNSSAntenna.tscn" id="2_oiutr"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a5qe7"]
