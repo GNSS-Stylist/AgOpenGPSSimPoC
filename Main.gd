@@ -32,6 +32,8 @@ func _ready():
 #	updateTerrainCollisionShape()
 	
 	loadConfig()
+	
+	$Panel_3rdPartyCredits.visible = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 
 	clientPeer = PacketPeerUDP.new()
 	clientPeer.set_broadcast_enabled(true)
@@ -331,6 +333,21 @@ func _physics_process(delta):
 	updateLocationOrientation(delta)
 	handleUDPComms()
 	handleForceFeedback($Panel_JoystickFFBSettings/CheckBox_AutoSteeringFFB.button_pressed)
+
+	if (Input.is_action_just_pressed("teleport_tractor")):
+		var space_state = get_world_3d().direct_space_state
+		var params:PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
+		var teleportDestPreferredOrigin:Vector3 = $FirstPersonFlyer/ManipulatorMeshes/ManipulatorTip.global_position
+		params.from = teleportDestPreferredOrigin + Vector3(0, 100, 0)
+		params.to = teleportDestPreferredOrigin + Vector3(0, -100, 0)
+		var result = space_state.intersect_ray(params)
+		var teleportDestCoords = teleportDestPreferredOrigin
+		if (!result.is_empty()):
+			teleportDestCoords = result.position + Vector3(0, 0.5, 0)
+		var tractorNode:VehicleBody3D = $Tractor
+		tractorNode.global_transform.origin = teleportDestCoords
+#		tractorNode.global_transform.basis = Basis.IDENTITY
+		tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
 
 func handleUDPComms():
 	# Note: PAOGI is handled separately (in _physics_process) to keep sending of it more precise
@@ -663,6 +680,8 @@ func loadConfig():
 	$Panel_SteerSettings/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = config.get_value("SteerSettings_Received", "MaximumLimit")
 	$Panel_SteerSettings/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = config.get_value("SteerSettings_Received", "MinimumToMove")
 	
+	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = config.get_value("Visibility", "Show3rdPartyCreditsOnStart", false)
+
 func saveConfig():
 	var config:ConfigFile = ConfigFile.new()
 
@@ -685,6 +704,8 @@ func saveConfig():
 	config.set_value("SteerSettings_Received", "MaximumLimit", $Panel_SteerSettings/GridContainer_SteerSettings/Label_MaximumLimit_Received.text)
 	config.set_value("SteerSettings_Received", "MinimumToMove", $Panel_SteerSettings/GridContainer_SteerSettings/Label_MinimumToMove_Received.text)
 	
+	config.set_value("Visibility", "Show3rdPartyCreditsOnStart", $Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
+
 	config.save(configFileName)
 
 
@@ -692,3 +713,13 @@ func _on_spin_box_max_speed_value_changed(value):
 	maxDrivingSpeed = value
 	$Panel_Controls/HSlider_TargetSpeed.min_value = -value
 	$Panel_Controls/HSlider_TargetSpeed.max_value = value
+
+func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
+	# This is for 3rd party credits url-handling
+	OS.shell_open(str(meta))
+
+func _on_button_close_3_rd_party_credits_pressed():
+	$Panel_3rdPartyCredits.visible = false
+
+func _on_button_show_3_rd_party_assets_pressed():
+	$Panel_3rdPartyCredits.visible = true

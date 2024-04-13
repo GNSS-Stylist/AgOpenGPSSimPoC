@@ -1,10 +1,10 @@
-[gd_scene load_steps=26 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=27 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
 [ext_resource type="PackedScene" uid="uid://be3msxv4st7e1" path="res://FirstPersonFlyer/FirstPersonFlyer.tscn" id="3_82cgc"]
 [ext_resource type="Texture2D" uid="uid://cd625u6i65jr0" path="res://Assets/Fields_4096x4096.png" id="3_h3exi"]
-[ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor.tscn" id="4_tsqja"]
+[ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor_Old/Tractor_Old.tscn" id="4_tsqja"]
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
 [ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
 [ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
@@ -78,12 +78,15 @@ albedo_color = Color(0, 1, 1, 0.254902)
 [sub_resource type="PlaneMesh" id="PlaneMesh_3bo1e"]
 size = Vector2(20, 20)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65nd2"]
+bg_color = Color(0, 0, 0, 1)
+
 [node name="Main" type="Node3D"]
 script = ExtResource("1_5mcwj")
 
 [node name="Panel_Controls" type="Panel" parent="."]
 offset_right = 436.0
-offset_bottom = 252.0
+offset_bottom = 289.0
 
 [node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
 layout_mode = 0
@@ -198,6 +201,14 @@ offset_right = 294.0
 offset_bottom = 251.0
 text = "Hide obstacles (from driver's view)"
 
+[node name="Button_Show3rdPartyAssets" type="Button" parent="Panel_Controls"]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 249.0
+offset_right = 223.0
+offset_bottom = 280.0
+text = "Show 3rd party assets used"
+
 [node name="Terrain" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_77m2g")
 cast_shadow = 0
@@ -243,7 +254,9 @@ transform = Transform3D(-1, 8.74228e-08, 0, -7.35672e-08, -0.841511, 0.54024, 4.
 shadow_enabled = true
 
 [node name="Tractor_Old" parent="." instance=ExtResource("4_tsqja")]
-transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 32.5336, 20.1141, 0)
+transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, -459.644, 29.0995, 464.35)
+steering = 0.349066
+targetSpeed = 5.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_27gc0")
@@ -574,7 +587,100 @@ angle_v_adjust = 13.555
 height = 4.455
 node_to_follow = NodePath("../Tractor")
 
+[node name="Panel_3rdPartyCredits" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_65nd2")
+
+[node name="RichTextLabel_3rdPartyCredits" type="RichTextLabel" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 43.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+bbcode_enabled = true
+text = "[b]Tractor (3D-model):[/b]
+by ahmadbaroud ([url=\"https://creativecommons.org/licenses/by/4.0/\"]CC BY 4.0[/url])
+[url]https://skfb.ly/oS6ZJ[/url]
+These modification were made to the original model:
+[ul]
+The original model was \"disassembled\" to separate objects.
+Tires and rims were separated from the original model and reconstructed in Godot Engine to make them usable in the simulated tractor. Their locations have been changed a bit.
+Front axle was replaced with one modeled in Godot Engine.
+Some parts of the cabin were separated from the rest of the body to make them hideable (mostly to make view from the cabin less obstructed).
+Steering wheel was replaced with another model (this change doesn't actually affect this model, but the replacement steering wheel is shown in the place of the original one).
+[/ul]
+
+[b]Steering wheel (3D-model):[/b]
+by sedayuzlu ([url=\"https://creativecommons.org/licenses/by/4.0/\"]CC BY 4.0[/url])
+[url]https://skfb.ly/oF7Nu[/url]
+
+Also uses:
+[ul]
+[url=\"https://github.com/Dechode/Godot-FFB-SDL\"]godot_ffb_sdl[/url] GDExtension (=plugin) for steering wheel force feedback support.
+Snippets from the [url=\"https://github.com/AgHardware/Boards/tree/main/TeensyModules/AIO%20Micro%20v4/Firmware/Autosteer_gps_teensy_v4\"]AgOpenGPS teensy code[/url]
+And of course [url=\"https://godotengine.org/\"]Godot Engine[/url]
+[/ul]
+
+Parties mentioned above do not have any affiliation with this project other than making their work available to use. Big thanks for sharing!
+
+Otherwise (not counting the 3rd party assets mentioned above) this project is released under GPLv3-license. So you need to follow the individual licenses if using any part of this to your purposes.
+
+Sources and assets can be found from this project's github repo: [url]https://github.com/GNSS-Stylist/AgOpenGPSSimPoC[/url]"
+
+[node name="Button_Close3rdPartyCredits" type="Button" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -185.0
+offset_top = 4.0
+offset_right = -33.0
+offset_bottom = 35.0
+grow_horizontal = 0
+text = "Close credits"
+
+[node name="CheckBox_Hide3rdPartyAssetsOnProgramStart" type="CheckBox" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.005
+anchor_right = 1.0
+anchor_bottom = 0.005
+offset_left = -562.0
+offset_top = 0.76
+offset_right = -192.0
+offset_bottom = 31.76
+text = "Do not show 3rd party assets on next start"
+
+[node name="Label" type="Label" parent="Panel_3rdPartyCredits"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 8.0
+offset_right = 184.0
+offset_bottom = 31.0
+text = "3rd party assets used:"
+
+[node name="HSeparator" type="HSeparator" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 34.0
+offset_bottom = 38.0
+grow_horizontal = 2
+
 [connection signal="value_changed" from="Panel_Controls/HSlider_SteerAngle" to="." method="_on_h_slider_steer_angle_value_changed"]
 [connection signal="value_changed" from="Panel_Controls/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
 [connection signal="pressed" from="Panel_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
 [connection signal="value_changed" from="Panel_Controls/SpinBox_MaxSpeed" to="." method="_on_spin_box_max_speed_value_changed"]
+[connection signal="pressed" from="Panel_Controls/Button_Show3rdPartyAssets" to="." method="_on_button_show_3_rd_party_assets_pressed"]
+[connection signal="meta_clicked" from="Panel_3rdPartyCredits/RichTextLabel_3rdPartyCredits" to="." method="_on_rich_text_label_3_rd_party_credits_meta_clicked"]
+[connection signal="pressed" from="Panel_3rdPartyCredits/Button_Close3rdPartyCredits" to="." method="_on_button_close_3_rd_party_credits_pressed"]
