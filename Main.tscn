@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=30 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
@@ -77,6 +77,18 @@ albedo_color = Color(0, 1, 1, 0.254902)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_3bo1e"]
 size = Vector2(20, 20)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1n3pp"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 0, 0.501961)
+disable_receive_shadows = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_mbk4m"]
+size = Vector3(0.1, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ypgcd"]
+size = Vector3(10, 1, 0.1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65nd2"]
 bg_color = Color(0, 0, 0, 1)
@@ -581,7 +593,20 @@ transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.7
 transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
 
 [node name="Camera_Up" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 20, 0)
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 20, -1.39)
+
+[node name="Crosshair" type="Node3D" parent="Tractor"]
+visible = false
+
+[node name="FrontBack" type="MeshInstance3D" parent="Tractor/Crosshair"]
+material_override = SubResource("StandardMaterial3D_1n3pp")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_mbk4m")
+
+[node name="LeftRight" type="MeshInstance3D" parent="Tractor/Crosshair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.39)
+material_override = SubResource("StandardMaterial3D_1n3pp")
+mesh = SubResource("BoxMesh_ypgcd")
 
 [node name="CameraSwitchCamera" type="Camera3D" parent="."]
 
