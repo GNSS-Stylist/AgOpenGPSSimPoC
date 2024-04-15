@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=34 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
@@ -9,6 +9,15 @@
 [ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
 [ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
 [ext_resource type="PackedScene" uid="uid://cwve0aixwkq2u" path="res://Settings/SettingsWindowContents.tscn" id="9_4p8ky"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
+seed = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_tn377"]
+width = 100
+height = 100
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_jlbij")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fb2jh"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -31,9 +40,6 @@ border_color = Color(0, 1, 0, 1)
 border_width_top = 3
 border_color = Color(0.501961, 0.501961, 0.501961, 1)
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
-seed = 3
-
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dnqro"]
 width = 100
 height = 100
@@ -49,7 +55,7 @@ noise = SubResource("FastNoiseLite_00ssp")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_77m2g"]
 render_priority = 0
 shader = ExtResource("2_qqamv")
-shader_parameter/heightMultiplier = 62.445
+shader_parameter/heightMultiplier = 50.0
 shader_parameter/terrainTextureScale = Vector2(10, 10)
 shader_parameter/gridDist = 0.01
 shader_parameter/gridWidth = 0.02
@@ -105,6 +111,7 @@ bg_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_5mcwj")
+terrainHeightmapNoiseTexture = SubResource("NoiseTexture2D_tn377")
 
 [node name="Panel_Controls" type="Panel" parent="."]
 offset_left = 5.0
@@ -266,9 +273,11 @@ collision_mask = 3
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/StaticBody3D"]
 
 [node name="Obstacles" type="Node3D" parent="."]
+process_mode = 4
+visible = false
 
 [node name="Ramp" type="MeshInstance3D" parent="Obstacles"]
-transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
+transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 5.39682, 24.7912)
 material_override = SubResource("StandardMaterial3D_mqdkg")
 mesh = SubResource("BoxMesh_nryma")
 skeleton = NodePath("../..")
@@ -282,7 +291,7 @@ transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98
 shape = SubResource("ConvexPolygonShape3D_w5fvs")
 
 [node name="StaticBox" type="MeshInstance3D" parent="Obstacles"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.605, 0)
 material_override = SubResource("StandardMaterial3D_gycji")
 mesh = SubResource("BoxMesh_qhte3")
 skeleton = NodePath("../..")
@@ -451,7 +460,7 @@ text = "0.00
 horizontal_alignment = 2
 
 [node name="Tractor" parent="." instance=ExtResource("7_4dsvj")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 18.8345, 0)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 15.1901, 0)
 implementWidth = 10.0
 implementColliding = true
 implementVisible = true

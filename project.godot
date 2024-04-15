@@ -25,7 +25,7 @@ window/subwindows/embed_subwindows=false
 
 [editor]
 
-run/subwindows/embed_subwindows=true
+run/subwindows/embed_subwindows=false
 
 [input]
 

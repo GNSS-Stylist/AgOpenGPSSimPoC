@@ -43,6 +43,9 @@ func loadConfig():
 	$Machine/VBoxContainer_Visibilities/HBoxContainer_ImplementWidth/SpinBox_ImplementWidth.value = config.get_value("Implement", "Width", 10)
 	$Machine/VBoxContainer_Visibilities/CheckBox_CrosshairVisible.button_pressed = config.get_value("Visibility", "TractorCrosshair", false)
 
+	$Terrain/GridContainer/SpinBox_RandomSeed.value = config.get_value("Terrain", "RandomSeed", 3)
+	$Terrain/GridContainer/SpinBox_HeightMultiplier.value = config.get_value("Terrain", "HeightMultiplier", 50)
+
 	show3rdPartyCreditsOnStart = config.get_value("Visibility", "Show3rdPartyCreditsOnStart", true)
 	
 func saveConfig():
@@ -73,6 +76,9 @@ func saveConfig():
 	config.set_value("Implement", "Colliding", $Machine/VBoxContainer_Visibilities/CheckBox_ImplementColliding.button_pressed)
 	config.set_value("Implement", "Width", $Machine/VBoxContainer_Visibilities/HBoxContainer_ImplementWidth/SpinBox_ImplementWidth.value)
 	config.set_value("Visibility", "TractorCrosshair", $Machine/VBoxContainer_Visibilities/CheckBox_CrosshairVisible.button_pressed)
+
+	config.set_value("Terrain", "RandomSeed", $Terrain/GridContainer/SpinBox_RandomSeed.value)
+	config.set_value("Terrain", "HeightMultiplier", $Terrain/GridContainer/SpinBox_HeightMultiplier.value)
 	
 	config.set_value("Visibility", "Show3rdPartyCreditsOnStart", show3rdPartyCreditsOnStart)
 

@@ -3,6 +3,10 @@ extends Node3D
 @onready var terrain = $Terrain
 @onready var terrainCollisionShape = $Terrain/StaticBody3D/CollisionShape3D
 
+@export var terrainHeightmapNoiseTexture:NoiseTexture2D
+@export var terrainHeightMultiplier:float = 50
+const terrainEdgeRise:float = 10
+
 var udpServer:UDPServer
 var clientPeer:PacketPeerUDP
 var peers = []
@@ -28,8 +32,9 @@ var maxDrivingSpeed:float = 24
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-# This does not work here (handled in _process instead):
-#	updateTerrainCollisionShape()
+	terrainHeightmapNoiseTexture.noise.seed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
+	terrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
+	updateTerrain()
 	
 	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = !($Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart)
 	$Panel_3rdPartyCredits.visible = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
@@ -46,17 +51,16 @@ func _exit_tree():
 	if (ffbInitSuccessful):
 		destroyForceFeedbackEffect()
 
-func updateTerrainCollisionShape():
-	var terrainMaterial:ShaderMaterial = terrain.material_override
-	var heightmapTexture:Texture2D = terrainMaterial.get_shader_parameter("heightmap")
-	var heightMultiplier:float = terrainMaterial.get_shader_parameter("heightMultiplier")
-	var edgeRise:float = terrainMaterial.get_shader_parameter("edgeRise")
-	var heightMapImage = heightmapTexture.get_image()
+var tractorTeleportRequest:bool = true
+
+func updateTerrain():
+	await terrainHeightmapNoiseTexture.changed
+	var heightMapImage = terrainHeightmapNoiseTexture.get_image()
 	heightMapImage.convert(Image.FORMAT_RF)
 	# Resize could be used to make CollisionShape lighter?
 	var data = heightMapImage.get_data().to_float32_array()
 	for i in range(0, data.size()):
-		data[i] *= heightMultiplier
+		data[i] *= terrainHeightMultiplier
 #		data[i] = randf_range(-1000, 1000)
 
 	var shape:HeightMapShape3D = HeightMapShape3D.new()
@@ -65,12 +69,12 @@ func updateTerrainCollisionShape():
 	
 	for i in range (heightMapImage.get_width()):
 		# North / south walls
-		data[i] += edgeRise
-		data[i + ((heightMapImage.get_width() - 1) * (heightMapImage.get_height()) - 1)] += edgeRise
+		data[i] += terrainEdgeRise
+		data[i + ((heightMapImage.get_width() - 1) * (heightMapImage.get_height()) - 1)] += terrainEdgeRise
 	for i in range(1, (heightMapImage.get_height()) - 1):
 		# West / east walls
-		data[i * heightMapImage.get_width()] += edgeRise
-		data[i * heightMapImage.get_width() + heightMapImage.get_width() - 1] += edgeRise
+		data[i * heightMapImage.get_width()] += terrainEdgeRise
+		data[i * heightMapImage.get_width() + heightMapImage.get_width() - 1] += terrainEdgeRise
 		
 #	for i in range(0, heightMapImage.get_height(), 2):
 #		for ii in range (0, heightMapImage.get_width()):
@@ -80,8 +84,16 @@ func updateTerrainCollisionShape():
 	terrainCollisionShape.shape = shape
 	var scaleVal:float = 1000.0/float(heightMapImage.get_width())
 	terrainCollisionShape.scale = Vector3(scaleVal, 1, scaleVal)
+	
+	var terrainMaterial:ShaderMaterial = terrain.material_override
+	terrainMaterial.set_shader_parameter("heightmap", terrainHeightmapNoiseTexture)
+	terrainMaterial.set_shader_parameter("heightMultiplier", terrainHeightMultiplier)
+	terrainMaterial.set_shader_parameter("edgeRise", terrainEdgeRise)
 
-var terrainCollisionShapeUpdated:bool = false
+	tractorTeleportRequest = true
+# The world is not ready for teleporting tractors at this stage?
+# (So we need to continue using fossil fuels to move them around. :( )
+#	teleportTractor($Tractor.global_transform.origin)
 
 var keyboardSpeedChangeTimer:float = 0
 var keyboardAngleChangeTimer:float = 0
@@ -96,17 +108,6 @@ var steerAngleSetpoint:float = 0
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	if (!terrainCollisionShapeUpdated):
-		# This is very dirty way to make sure the shadermatererial's
-		# get_shader_parameter-function gives sensible values before
-		# using them in updateTerrainCollisionShape
-		# (updateTerrainCollisionShape does not work when called from _ready)
-		# This may be actually unsafe to call outside _physics_process,
-		# But there this fails, since no frames are necessarily drawn before
-		updateTerrainCollisionShape()
-		terrainCollisionShapeUpdated = true
-		teleportTractor($Tractor.global_transform.origin)
-
 	if (Input.is_action_just_pressed("full_screen_toggle")):
 		if (DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN):
 			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
@@ -255,6 +256,22 @@ var timeAfterPAOGIMessage:float = 0
 var timeAfterValidSteerAngleSetpoint:float = 0
 
 func _physics_process(delta):
+	var newTerrainRandomSeed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
+	var newTerrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
+	
+	if (tractorTeleportRequest):
+		teleportTractor($Tractor.global_transform.origin)
+		tractorTeleportRequest = false
+	
+	if ((newTerrainRandomSeed != terrainHeightmapNoiseTexture.noise.seed) ||
+			(newTerrainHeightMultiplier != terrainHeightMultiplier)):
+		var terrainMaterial:ShaderMaterial = terrain.material_override
+		
+		terrainHeightmapNoiseTexture.noise.seed = newTerrainRandomSeed
+		terrainHeightMultiplier = newTerrainHeightMultiplier
+		
+		updateTerrain()
+		
 	if (Input.is_action_just_pressed("reset_angle_and_speed")):
 		_on_button_reset_steer_angle_and_speed_pressed()
 
@@ -701,10 +718,11 @@ func teleportTractor(destCoords:Vector3):
 	var result = space_state.intersect_ray(params)
 	var teleportDestCoords = destCoords
 	if (!result.is_empty()):
-		teleportDestCoords = result.position + Vector3(0, 0.5, 0)
+		teleportDestCoords = result.position + Vector3(0, 1, 0)
 	var tractorNode:VehicleBody3D = $Tractor
 	tractorNode.global_transform.origin = teleportDestCoords
 	tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
+	tractorNode.linear_velocity = Vector3(tractorNode.linear_velocity.x, 0, tractorNode.linear_velocity.z)
 
 func _on_window_settings_close_requested():
 	$Window_Settings.visible = false

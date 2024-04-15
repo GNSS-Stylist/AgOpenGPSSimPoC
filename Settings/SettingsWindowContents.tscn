@@ -192,3 +192,38 @@ suffix = "m"
 [node name="CheckBox_CrosshairVisible" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
 layout_mode = 2
 text = "View crosshair on the origin (rear axle midpoint)"
+
+[node name="Terrain" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="Terrain"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="Label_RandomSeed" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Random seed:"
+horizontal_alignment = 2
+
+[node name="SpinBox_RandomSeed" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+max_value = 2e+09
+value = 3.0
+rounded = true
+
+[node name="Label_HeightMultiplier" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Height multiplier:
+"
+
+[node name="SpinBox_HeightMultiplier" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+max_value = 200.0
+step = 0.1
+value = 50.0
