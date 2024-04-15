@@ -30,7 +30,7 @@ var navMode:NavigationMode = NavigationMode.NAVMODE_FPS
 # Movement:
 var localVelocity:Vector3 = Vector3()
 var direction:Vector3 = Vector3()
-var velocityMultiplier:float = 5
+static var velocityMultiplier:float = 5
 const minVelocityMultiplier:float = 0.01
 const maxVelocityMultiplier:float = 200
 const flyAcceleration:float = 0.9	# 0 = don't move, 1 = immediately full speed
@@ -98,10 +98,6 @@ func _process(delta):
 			mouse_captured = true
 			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
-	# This is outside the mouse_captured-branch below to keep flying speed
-	# identical between all first persons (there may be many instances)
-	handleFlyingSpeed(delta)
-
 	if !mouse_captured or !(get_node("Head/FirstPersonCamera").current):
 		# Do not react if camera is not in use
 		# (There can be many instances of this class)
@@ -123,6 +119,7 @@ func _process(delta):
 		return
 
 	if mouse_captured:
+		handleFlyingSpeed(delta) # Uses static var to keep flying speed identical between instances of this class
 		aim(delta)
 		fly(delta)
 
