@@ -690,10 +690,10 @@ func calcSteeringPID(steerAngleError:float, steerSettings:SteerSettings) -> floa
 	
 func _on_spin_box_max_speed_value_changed(value):
 	maxDrivingSpeed = value
-	$Panel_Controls/GridContainer_Sliders/HSlider_TargetSpeed.min_value = -value
-	$Panel_Controls/GridContainer_Sliders/HSlider_TargetSpeed.max_value = value
-	$Panel_Controls/GridContainer_Sliders/HSlider_RealSpeed.min_value = -value
-	$Panel_Controls/GridContainer_Sliders/HSlider_RealSpeed.max_value = value
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.min_value = -value
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.max_value = value
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealSpeed.min_value = -value
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealSpeed.max_value = value
 
 func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
 	# This is for 3rd party credits url-handling
