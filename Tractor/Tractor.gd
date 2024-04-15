@@ -1,3 +1,4 @@
+@tool
 extends VehicleBody3D
 
 @export var targetSpeed:float = 0
@@ -9,6 +10,14 @@ extends VehicleBody3D
 		hideObstacles = hideFlag
 	get:
 		return hideObstacles
+
+@export var hideEverythingButWheels:bool:
+	set(hideFlag):
+		if (hideEverythingButWheels != hideFlag):
+			updateEverythingButWheelsVisibility(hideFlag)
+		hideEverythingButWheels = hideFlag
+	get:
+		return hideEverythingButWheels
 
 # Latitude and longitude are GNSS-antenna's values
 var latitude:float = 0		# in deg
@@ -78,13 +87,17 @@ func _physics_process(delta):
 
 	# TODO: Try Jolt or some of the "3rd party" vehicle implementations...
 	# (just now too lazy to try)
-	
-	$RearWheelObject_Left.rotation = $VehicleWheel_RearLeft.rotation
-	$RearWheelObject_Right.rotation = $VehicleWheel_RearRight.rotation
-	$FrontWheelObject_Left.rotation = $VehicleWheel_FrontLeft.rotation
-	$FrontWheelObject_Left.transform.origin.y = $VehicleWheel_FrontLeft.transform.origin.y
-	$FrontWheelObject_Right.rotation = $VehicleWheel_FrontRight.rotation
-	$FrontWheelObject_Right.transform.origin.y = $VehicleWheel_FrontRight.transform.origin.y
+
+	if (!Engine.is_editor_hint()):
+		# And running this in editor (@tool script) turns the wheels
+		# wrong way (like they are meant to be driven backwards)
+		# so not copying the rotation in editor.
+		$RearWheelObject_Left.rotation = $VehicleWheel_RearLeft.rotation
+		$RearWheelObject_Right.rotation = $VehicleWheel_RearRight.rotation
+		$FrontWheelObject_Left.rotation = $VehicleWheel_FrontLeft.rotation
+		$FrontWheelObject_Left.transform.origin.y = $VehicleWheel_FrontLeft.transform.origin.y
+		$FrontWheelObject_Right.rotation = $VehicleWheel_FrontRight.rotation
+		$FrontWheelObject_Right.transform.origin.y = $VehicleWheel_FrontRight.transform.origin.y
 
 func updateObstacleVisibility(hideFlag):
 	var modelRootNode = $Tractor_Wheeless/Sketchfab_model/eeff7b40aecd4dd1a8f4adcae6c5bdec_fbx/RootNode/AM115_026
@@ -106,5 +119,7 @@ func updateObstacleVisibility(hideFlag):
 	modelRootNode.get_node("RMirror_4").visible = !hideFlag
 	modelRootNode.get_node("RMirror_5").visible = !hideFlag
 	
-	
-
+func updateEverythingButWheelsVisibility(hideFlag):
+	$Tractor_Wheeless.visible = !hideFlag
+	$FakeFrontAxle.visible = !hideFlag
+	$GNSSAntenna.visible = !hideFlag
