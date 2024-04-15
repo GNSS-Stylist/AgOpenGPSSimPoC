@@ -265,8 +265,7 @@ func _physics_process(delta):
 	
 	if ((newTerrainRandomSeed != terrainHeightmapNoiseTexture.noise.seed) ||
 			(newTerrainHeightMultiplier != terrainHeightMultiplier)):
-		var terrainMaterial:ShaderMaterial = terrain.material_override
-		
+
 		terrainHeightmapNoiseTexture.noise.seed = newTerrainRandomSeed
 		terrainHeightMultiplier = newTerrainHeightMultiplier
 		
