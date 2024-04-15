@@ -1,0 +1,194 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwve0aixwkq2u"]
+
+[ext_resource type="Script" path="res://Settings/SettingsWindowContents.gd" id="1_gl0sx"]
+
+[node name="TabContainer_Settings" type="TabContainer"]
+offset_right = 532.0
+offset_bottom = 407.0
+script = ExtResource("1_gl0sx")
+
+[node name="General" type="Panel" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer_General" type="VBoxContainer" parent="General"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "Debug message prints (receive)"
+
+[node name="CheckBox_DebugMessage_Send" type="CheckBox" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "Debug message prints (send)"
+
+[node name="CheckBox_ViewLocationOrientation" type="CheckBox" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "View tractor location & orientation"
+
+[node name="CheckBox_ViewFFBJoystickInfo" type="CheckBox" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "View force feedback & joystick / pedal info"
+
+[node name="Controls" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer_Controls" type="VBoxContainer" parent="Controls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CheckBox_JoystickAngle" type="CheckBox" parent="Controls/VBoxContainer_Controls"]
+layout_mode = 2
+text = "Use joystick / steering wheel for angle"
+
+[node name="CheckBox_JoystickSpeed" type="CheckBox" parent="Controls/VBoxContainer_Controls"]
+layout_mode = 2
+text = "Use joystick / pedals for speed control"
+
+[node name="CheckBox_AutoSteeringFFB" type="CheckBox" parent="Controls/VBoxContainer_Controls"]
+layout_mode = 2
+text = "Automatic steering force feedback"
+
+[node name="CheckBox_UseSteeringWheelangleForAutoSteeringAngle" type="CheckBox" parent="Controls/VBoxContainer_Controls"]
+layout_mode = 2
+text = "Use steering wheel position for wheel angle (auto)"
+
+[node name="SteerSettings" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SteerSettings"]
+layout_mode = 0
+offset_right = 523.0
+offset_bottom = 369.0
+
+[node name="GridContainer_SteerSettings" type="GridContainer" parent="SteerSettings/VBoxContainer"]
+layout_mode = 2
+columns = 3
+
+[node name="Label_Title" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "SteerSettings"
+
+[node name="Label_Local" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Local"
+
+[node name="Label_received" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Received"
+
+[node name="Label_PGain" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Proportional gain"
+
+[node name="SpinBox_PGain_Local" type="SpinBox" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+value = 40.0
+rounded = true
+
+[node name="Label_PGain_Received" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_MaximumLimit" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Maximum limit"
+
+[node name="SpinBox_MaximumLimit_Local" type="SpinBox" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+value = 255.0
+rounded = true
+
+[node name="Label_MaximumLimit_Received" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_MinimumToMove" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "Minimum to move"
+
+[node name="SpinBox_MinimumToMove_Local" type="SpinBox" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+max_value = 255.0
+rounded = true
+
+[node name="Label_MinimumToMove_Received" type="Label" parent="SteerSettings/VBoxContainer/GridContainer_SteerSettings"]
+layout_mode = 2
+text = "0"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SteerSettings/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label_ParametersToUse" type="Label" parent="SteerSettings/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Parameters to use:"
+
+[node name="OptionButton_ParametersToUse" type="OptionButton" parent="SteerSettings/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+item_count = 2
+selected = 0
+popup/item_0/text = "Local"
+popup/item_0/id = 0
+popup/item_1/text = "Received"
+popup/item_1/id = 1
+
+[node name="Label_TimeSinceParamsReceived" type="Label" parent="SteerSettings/VBoxContainer"]
+layout_mode = 2
+text = "Time since received: Not received"
+
+[node name="Machine" type="Panel" parent="."]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer_Visibilities" type="VBoxContainer" parent="Machine"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CheckBox_HideObstacles" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+text = "Hide obstacles (cab pillars etc.) from driver's view"
+
+[node name="CheckBox_OnlyWheels" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+text = "Only wheels visible on the tractor"
+
+[node name="CheckBox_ImplementVisible" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+button_pressed = true
+text = "View implement"
+
+[node name="CheckBox_ImplementColliding" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+button_pressed = true
+text = "Colliding implement"
+
+[node name="HBoxContainer_ImplementWidth" type="HBoxContainer" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+
+[node name="Label_ImplementWidth" type="Label" parent="Machine/VBoxContainer_Visibilities/HBoxContainer_ImplementWidth"]
+layout_mode = 2
+text = "Implement width:"
+
+[node name="SpinBox_ImplementWidth" type="SpinBox" parent="Machine/VBoxContainer_Visibilities/HBoxContainer_ImplementWidth"]
+layout_mode = 2
+min_value = 0.1
+step = 0.1
+value = 10.0
+suffix = "m"
+
+[node name="CheckBox_CrosshairVisible" type="CheckBox" parent="Machine/VBoxContainer_Visibilities"]
+layout_mode = 2
+text = "View crosshair on the origin (rear axle midpoint)"

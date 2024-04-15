@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=33 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
@@ -8,6 +8,28 @@
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
 [ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
 [ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
+[ext_resource type="PackedScene" uid="uid://cwve0aixwkq2u" path="res://Settings/SettingsWindowContents.tscn" id="9_4p8ky"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fb2jh"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_top = 3
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_55e0x"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jevl"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_klnu0"]
+border_width_top = 3
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ewhcx"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
 seed = 3
@@ -78,18 +100,6 @@ albedo_color = Color(0, 1, 1, 0.254902)
 [sub_resource type="PlaneMesh" id="PlaneMesh_3bo1e"]
 size = Vector2(20, 20)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1n3pp"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(1, 1, 0, 0.501961)
-disable_receive_shadows = true
-
-[sub_resource type="BoxMesh" id="BoxMesh_mbk4m"]
-size = Vector3(0.1, 1, 20)
-
-[sub_resource type="BoxMesh" id="BoxMesh_ypgcd"]
-size = Vector3(10, 1, 0.1)
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65nd2"]
 bg_color = Color(0, 0, 0, 1)
 
@@ -97,128 +107,151 @@ bg_color = Color(0, 0, 0, 1)
 script = ExtResource("1_5mcwj")
 
 [node name="Panel_Controls" type="Panel" parent="."]
-offset_right = 436.0
-offset_bottom = 289.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 445.0
+offset_bottom = 285.0
 
-[node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 130.0
-offset_right = 372.0
-offset_bottom = 26.0
+[node name="VBoxContainer_Controls" type="VBoxContainer" parent="Panel_Controls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer_Sliders" type="GridContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+columns = 3
+
+[node name="Label_HIDAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "HID angle:"
+horizontal_alignment = 2
+
+[node name="HSlider_HIDAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/slider = SubResource("StyleBoxFlat_fb2jh")
 min_value = -45.0
 max_value = 45.0
 step = 0.01
 tick_count = 5
 ticks_on_borders = true
 
-[node name="Label_SteerAngle" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_right = 120.0
-offset_bottom = 26.0
-text = "Steer angle:"
+[node name="Label_HIDAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "0"
+
+[node name="Label_CommandedAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Commanded angle:"
+
+[node name="HSlider_CommandedAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_55e0x")
+min_value = -45.0
+max_value = 45.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_CommandedAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_RealAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Real angle:"
 horizontal_alignment = 2
 
-[node name="Label_TargetSpeed" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 32.0
-offset_right = 120.0
-offset_bottom = 58.0
+[node name="HSlider_RealAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_3jevl")
+min_value = -45.0
+max_value = 45.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_RealAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_TargetSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "Target speed:"
 horizontal_alignment = 2
 
-[node name="HSlider_TargetSpeed" type="HSlider" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 130.0
-offset_top = 32.0
-offset_right = 372.0
-offset_bottom = 58.0
+[node name="HSlider_TargetSpeed" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_klnu0")
 min_value = -24.0
 max_value = 24.0
 step = 0.1
 tick_count = 5
 ticks_on_borders = true
 
-[node name="Label_SteerAngle_Value" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 382.0
-offset_right = 422.0
-offset_bottom = 26.0
+[node name="Label_TargetSpeed_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "0"
 
-[node name="Label_TargetSpeed_Value" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 382.0
-offset_top = 32.0
-offset_right = 422.0
-offset_bottom = 58.0
+[node name="Label_RealSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Real speed:"
+horizontal_alignment = 2
+
+[node name="HSlider_RealSpeed" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_ewhcx")
+min_value = -24.0
+max_value = 24.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_RealSpeed_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "0"
 
-[node name="Button_ResetSteerAngleAndSpeed" type="Button" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 64.0
-offset_right = 366.0
-offset_bottom = 95.0
+[node name="Button_ResetSteerAngleAndSpeed" type="Button" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
 text = "Reset manual angle and speed (when using keyboard)"
 
-[node name="CheckBox_AutomaticSteering" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 120.0
-offset_right = 176.0
-offset_bottom = 151.0
-disabled = true
-text = "Automatic steering"
+[node name="HBoxContainer_MaxSpeed" type="HBoxContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
 
-[node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 145.0
-offset_right = 270.0
-offset_bottom = 176.0
-text = "Debug message prints (receive)"
-
-[node name="CheckBox_DebugMessage_Send" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 170.0
-offset_right = 251.0
-offset_bottom = 201.0
-text = "Debug message prints (send)"
-
-[node name="CheckBox_ShowJoystickSettings" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 195.0
-offset_right = 326.0
-offset_bottom = 226.0
-text = "Show joystick / steering wheel settings"
-
-[node name="Label_MaxSpeed" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 100.0
-offset_right = 40.0
-offset_bottom = 123.0
+[node name="Label_MaxSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed"]
+layout_mode = 2
 text = "Max speed (km/h):"
 
-[node name="SpinBox_MaxSpeed" type="SpinBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 148.0
-offset_top = 96.0
-offset_right = 242.0
-offset_bottom = 127.0
+[node name="SpinBox_MaxSpeed" type="SpinBox" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed"]
+layout_mode = 2
 min_value = 1.0
 max_value = 300.0
 value = 24.0
 
-[node name="CheckBox_HideObstacles" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 220.0
-offset_right = 294.0
-offset_bottom = 251.0
-text = "Hide obstacles (from driver's view)"
+[node name="CheckBox_AutomaticSteering" type="CheckBox" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+disabled = true
+text = "Automatic steering"
 
-[node name="Button_Show3rdPartyAssets" type="Button" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 249.0
-offset_right = 223.0
-offset_bottom = 280.0
+[node name="HBoxContainer_Settings_3rdPartyAssets" type="HBoxContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+
+[node name="Button_ShowSettings" type="Button" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets"]
+layout_mode = 2
+text = "Settings"
+
+[node name="Button_Show3rdPartyAssets" type="Button" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets"]
+layout_mode = 2
 text = "Show 3rd party assets used"
 
 [node name="Terrain" type="MeshInstance3D" parent="."]
@@ -289,7 +322,7 @@ mesh = SubResource("PlaneMesh_3bo1e")
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -186.0
+offset_top = -160.0
 offset_right = 232.0
 grow_vertical = 0
 
@@ -371,96 +404,38 @@ offset_right = 210.0
 offset_bottom = 151.0
 horizontal_alignment = 2
 
-[node name="Label_Speed" type="Label" parent="Panel_LocationOrientation"]
-layout_mode = 0
-offset_top = 156.0
-offset_right = 100.0
-offset_bottom = 182.0
-text = "Speed:"
-horizontal_alignment = 2
-
-[node name="Label_Speed_Value" type="Label" parent="Panel_LocationOrientation"]
-layout_mode = 0
-offset_left = 110.0
-offset_top = 156.0
-offset_right = 210.0
-offset_bottom = 179.0
-horizontal_alignment = 2
-
 [node name="Panel_JoystickFFBSettings" type="Panel" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -446.0
-offset_bottom = 186.0
+offset_bottom = 65.0
 grow_horizontal = 0
 
-[node name="CheckBox_JoystickAngle" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 1.0
-offset_right = 323.0
-offset_bottom = 32.0
-text = "Use joystick / steering wheel for angle"
+[node name="VBoxContainer_JoystickFFBSettings" type="VBoxContainer" parent="Panel_JoystickFFBSettings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="CheckBox_JoystickSpeed" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 26.0
-offset_right = 324.0
-offset_bottom = 57.0
-text = "Use joystick / pedals for speed control"
-
-[node name="CheckBox_JoystickReverse" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 51.0
-offset_right = 340.0
-offset_bottom = 82.0
+[node name="CheckBox_JoystickReverse" type="CheckBox" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings"]
+layout_mode = 2
 text = "Joystick / pedal driving direction reverse
 "
 
-[node name="CheckBox_AutoSteeringFFB" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 76.0
-offset_right = 296.0
-offset_bottom = 107.0
-text = "Automatic steering force feedback"
+[node name="HBoxContainer_FFBForce" type="HBoxContainer" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings"]
+layout_mode = 2
 
-[node name="CheckBox_UseSteeringWheelangleForAutoSteeringAngle" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 100.0
-offset_right = 417.0
-offset_bottom = 131.0
-text = "Use steering wheel position for wheel angle (auto)"
-
-[node name="Label_Force" type="Label" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 5.0
-offset_top = 154.0
-offset_right = 177.0
-offset_bottom = 180.0
+[node name="Label_Force" type="Label" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+layout_mode = 2
 text = "Force feedback force:"
 horizontal_alignment = 2
 
-[node name="Label_Force_Value" type="Label" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 386.0
-offset_top = 154.0
-offset_right = 427.0
-offset_bottom = 180.0
-text = "0.00
-"
-horizontal_alignment = 2
-
-[node name="HSlider_Force" type="HSlider" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 180.0
-offset_top = 159.0
-offset_right = 381.0
-offset_bottom = 175.0
+[node name="HSlider_Force" type="HSlider" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+layout_mode = 2
+size_flags_horizontal = 3
 min_value = -1.0
 max_value = 1.0
 step = 0.01
@@ -468,117 +443,19 @@ editable = false
 tick_count = 5
 ticks_on_borders = true
 
-[node name="CheckBox_ShowSteerSettings" type="CheckBox" parent="Panel_JoystickFFBSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 125.0
-offset_right = 26.0
-offset_bottom = 149.0
-text = "Show steer settings"
-
-[node name="Panel_SteerSettings" type="Panel" parent="."]
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -322.0
-offset_top = -204.0
-grow_horizontal = 0
-grow_vertical = 0
-
-[node name="GridContainer_SteerSettings" type="GridContainer" parent="Panel_SteerSettings"]
-layout_mode = 0
-offset_left = 2.0
-offset_top = 2.0
-offset_right = 330.0
-offset_bottom = 106.0
-columns = 3
-
-[node name="Label_Title" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
+[node name="Label_Force_Value" type="Label" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
-text = "SteerSettings"
-
-[node name="Label_Local" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "Local"
-
-[node name="Label_received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "Received"
-
-[node name="Label_PGain" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "Proportional gain"
-
-[node name="SpinBox_PGain_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-max_value = 255.0
-value = 40.0
-rounded = true
-
-[node name="Label_PGain_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "0"
-
-[node name="Label_MaximumLimit" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "Maximum limit"
-
-[node name="SpinBox_MaximumLimit_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-max_value = 255.0
-value = 255.0
-rounded = true
-
-[node name="Label_MaximumLimit_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "0"
-
-[node name="Label_MinimumToMove" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "Minimum to move"
-
-[node name="SpinBox_MinimumToMove_Local" type="SpinBox" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-max_value = 255.0
-rounded = true
-
-[node name="Label_MinimumToMove_Received" type="Label" parent="Panel_SteerSettings/GridContainer_SteerSettings"]
-layout_mode = 2
-text = "0"
-
-[node name="Label_ParametersToUse" type="Label" parent="Panel_SteerSettings"]
-layout_mode = 0
-offset_left = 3.0
-offset_top = 143.0
-offset_right = 155.0
-offset_bottom = 169.0
-text = "Parameters to use:"
-
-[node name="OptionButton_ParametersToUse" type="OptionButton" parent="Panel_SteerSettings"]
-layout_mode = 0
-offset_left = 156.0
-offset_top = 140.0
-offset_right = 313.0
-offset_bottom = 171.0
-item_count = 2
-selected = 0
-popup/item_0/text = "Local"
-popup/item_0/id = 0
-popup/item_1/text = "Received"
-popup/item_1/id = 1
-
-[node name="Label_TimeSinceParamsReceived" type="Label" parent="Panel_SteerSettings"]
-layout_mode = 0
-offset_left = 3.0
-offset_top = 172.0
-offset_right = 306.0
-offset_bottom = 198.0
-text = "Time since received: Not received"
+text = "0.00
+"
+horizontal_alignment = 2
 
 [node name="Tractor" parent="." instance=ExtResource("7_4dsvj")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 18.8345, 0)
+implementWidth = 10.0
+implementColliding = true
+implementVisible = true
+crosshairVisible = true
 
 [node name="Camera_Back_Fixed" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-1, 4.44611e-08, -7.56415e-08, 1.05492e-08, 0.916775, 0.399405, 8.71042e-08, 0.399405, -0.916775, 0, 5.14463, -6.10679)
@@ -595,19 +472,6 @@ transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -
 [node name="Camera_Up" type="Camera3D" parent="Tractor"]
 transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 20, -1.39)
 
-[node name="Crosshair" type="Node3D" parent="Tractor"]
-visible = false
-
-[node name="FrontBack" type="MeshInstance3D" parent="Tractor/Crosshair"]
-material_override = SubResource("StandardMaterial3D_1n3pp")
-cast_shadow = 0
-mesh = SubResource("BoxMesh_mbk4m")
-
-[node name="LeftRight" type="MeshInstance3D" parent="Tractor/Crosshair"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.39)
-material_override = SubResource("StandardMaterial3D_1n3pp")
-mesh = SubResource("BoxMesh_ypgcd")
-
 [node name="CameraSwitchCamera" type="Camera3D" parent="."]
 
 [node name="Camera_Follow" type="Camera3D" parent="."]
@@ -622,6 +486,7 @@ height = 4.455
 node_to_follow = NodePath("../Tractor")
 
 [node name="Panel_3rdPartyCredits" type="Panel" parent="."]
+visible = false
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -711,10 +576,29 @@ offset_top = 34.0
 offset_bottom = 38.0
 grow_horizontal = 2
 
-[connection signal="value_changed" from="Panel_Controls/HSlider_SteerAngle" to="." method="_on_h_slider_steer_angle_value_changed"]
-[connection signal="value_changed" from="Panel_Controls/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
-[connection signal="pressed" from="Panel_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
-[connection signal="value_changed" from="Panel_Controls/SpinBox_MaxSpeed" to="." method="_on_spin_box_max_speed_value_changed"]
-[connection signal="pressed" from="Panel_Controls/Button_Show3rdPartyAssets" to="." method="_on_button_show_3_rd_party_assets_pressed"]
+[node name="Window_Settings" type="Window" parent="."]
+title = "Settings"
+initial_position = 2
+size = Vector2i(700, 500)
+visible = false
+
+[node name="TabContainer_Settings" parent="Window_Settings" instance=ExtResource("9_4p8ky")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle" to="." method="_on_h_slider_hid_angle_value_changed"]
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed/SpinBox_MaxSpeed" to="." method="_on_spin_box_max_speed_value_changed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets/Button_ShowSettings" to="." method="_on_button_show_settings_pressed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets/Button_Show3rdPartyAssets" to="." method="_on_button_show_3_rd_party_assets_pressed"]
 [connection signal="meta_clicked" from="Panel_3rdPartyCredits/RichTextLabel_3rdPartyCredits" to="." method="_on_rich_text_label_3_rd_party_credits_meta_clicked"]
 [connection signal="pressed" from="Panel_3rdPartyCredits/Button_Close3rdPartyCredits" to="." method="_on_button_close_3_rd_party_credits_pressed"]
+[connection signal="close_requested" from="Window_Settings" to="." method="_on_window_settings_close_requested"]
+
+[editable path="Window_Settings/TabContainer_Settings"]

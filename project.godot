@@ -19,6 +19,14 @@ config/icon="res://icon.svg"
 
 gdscript/warnings/integer_division=0
 
+[display]
+
+window/subwindows/embed_subwindows=false
+
+[editor]
+
+run/subwindows/embed_subwindows=true
+
 [input]
 
 ui_select={

@@ -31,8 +31,7 @@ func _ready():
 # This does not work here (handled in _process instead):
 #	updateTerrainCollisionShape()
 	
-	loadConfig()
-	
+	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = !($Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart)
 	$Panel_3rdPartyCredits.visible = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 
 	clientPeer = PacketPeerUDP.new()
@@ -46,7 +45,6 @@ func _ready():
 func _exit_tree():
 	if (ffbInitSuccessful):
 		destroyForceFeedbackEffect()
-	saveConfig()
 
 func updateTerrainCollisionShape():
 	var terrainMaterial:ShaderMaterial = terrain.material_override
@@ -117,16 +115,27 @@ func _process(_delta):
 
 	cameraSwitch()
 	
-	$Panel_JoystickFFBSettings.visible = $Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed
-	$Panel_SteerSettings.visible = $Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed && $Panel_JoystickFFBSettings/CheckBox_ShowSteerSettings.button_pressed
-	$Tractor.hideObstacles = $Panel_Controls/CheckBox_HideObstacles.button_pressed
+	$Tractor.hideObstacles = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/CheckBox_HideObstacles.button_pressed
+	$Tractor.hideEverythingButWheels = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/CheckBox_OnlyWheels.button_pressed
+	$Tractor.implementWidth = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/HBoxContainer_ImplementWidth/SpinBox_ImplementWidth.value
+	$Tractor.implementColliding = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/CheckBox_ImplementColliding.button_pressed
+	$Tractor.implementVisible = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/CheckBox_ImplementVisible.button_pressed
+	$Tractor.crosshairVisible = $Window_Settings/TabContainer_Settings/Machine/VBoxContainer_Visibilities/CheckBox_CrosshairVisible.button_pressed
+	
+	$Panel_LocationOrientation.visible = $Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_ViewLocationOrientation.button_pressed
+	$Panel_JoystickFFBSettings.visible = $Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_ViewFFBJoystickInfo.button_pressed
 	
 	if (steerSettings_ReceivedUpTime_ms != 0):
 		var timeElapsed:float = (Time.get_ticks_msec() - steerSettings_ReceivedUpTime_ms) * 0.001
-		$Panel_SteerSettings/Label_TimeSinceParamsReceived.text = "Time since received: %1.1f s" % timeElapsed
+		$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/Label_TimeSinceParamsReceived.text = "Time since received: %1.1f s" % timeElapsed
 	else:
-		$Panel_SteerSettings/Label_TimeSinceParamsReceived.text = "Time since received: not received"
+		$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/Label_TimeSinceParamsReceived.text = "Time since received: not received"
+		$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/Label_TimeSinceParamsReceived.text = "Time since received: not received"
 
+	var steerAngleDeg = rad_to_deg(-$Tractor.steering)
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealAngle.value = steerAngleDeg
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_RealAngle_Value.text = "%1.2f" %steerAngleDeg
+	
 const camera_InterpolationTime_Fast = 500
 const camera_InterpolationTime_Slow = 2000
 var camera_Interpolating:bool = false
@@ -229,17 +238,17 @@ func updateLocationOrientation(delta:float):
 	$Panel_LocationOrientation/Label_Roll_Value.text = "%1.1f" % $Tractor.roll
 	var speedCoeff:float = pow(speedFilterCoeff, delta)
 	filteredSpeed = $Tractor.measuredSpeed * (1.0 - speedCoeff) + filteredSpeed * speedCoeff
-	$Panel_LocationOrientation/Label_Speed_Value.text = "%1.1f" % filteredSpeed
+#	$Panel_LocationOrientation/Label_Speed_Value.text = "%1.1f" % filteredSpeed
 
-func _on_h_slider_steer_angle_value_changed(value):
-	$Panel_Controls/Label_SteerAngle_Value.text = "%1.2f" % value
+func _on_h_slider_hid_angle_value_changed(value):
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_HIDAngle_Value.text = "%1.2f" % value
 
 func _on_h_slider_target_speed_value_changed(value):
-	$Panel_Controls/Label_TargetSpeed_Value.text = "%1.1f" % value
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_TargetSpeed_Value.text = "%1.1f" % value
 
 func _on_button_reset_steer_angle_and_speed_pressed():
-	$Panel_Controls/HSlider_SteerAngle.value = 0
-	$Panel_Controls/HSlider_TargetSpeed.value = 0
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngleAngle.value = 0
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value = 0
 	joystickSpeedSetpoint = 0
 
 var timeAfterPAOGIMessage:float = 0
@@ -254,11 +263,11 @@ func _physics_process(delta):
 
 	keyboardSpeedChangeTimer += delta
 
-	if ($Panel_JoystickFFBSettings/CheckBox_JoystickSpeed.button_pressed):
+	if ($Window_Settings/TabContainer_Settings/Controls/VBoxContainer_Controls/CheckBox_JoystickSpeed.button_pressed):
 		var speedChange:float = (Input.get_action_strength("Joystick_accelerate") * joystickSpeedAcceleration - 
 				Input.get_action_strength("joystick_decelerate") * joystickSpeedDeceleration) * delta
 		
-		if ($Panel_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed):
+		if ($Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed):
 			joystickSpeedSetpoint -= speedChange
 			if (joystickSpeedSetpoint > 0):
 				joystickSpeedSetpoint = 0
@@ -268,45 +277,45 @@ func _physics_process(delta):
 				joystickSpeedSetpoint = 0
 		
 		joystickSpeedSetpoint = clampf(joystickSpeedSetpoint, -maxDrivingSpeed, maxDrivingSpeed)
-		$Panel_Controls/HSlider_TargetSpeed.value = joystickSpeedSetpoint
+		$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value = joystickSpeedSetpoint
 
 	if (keyboardSpeedChangeTimer >= 0.01):
 		if (Input.is_action_pressed("increase_speed")):
-			$Panel_Controls/HSlider_TargetSpeed.value += 0.1
+			$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value += 0.1
 			keyboardSpeedChangeTimer = 0
-			joystickSpeedSetpoint = $Panel_Controls/HSlider_TargetSpeed.value
+			joystickSpeedSetpoint = $Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value
 		if (Input.is_action_pressed("decrease_speed")):
-			$Panel_Controls/HSlider_TargetSpeed.value -= 0.1
+			$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value -= 0.1
 			keyboardSpeedChangeTimer = 0
-			joystickSpeedSetpoint = $Panel_Controls/HSlider_TargetSpeed.value
+			joystickSpeedSetpoint = $Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value
 
-	$Tractor.targetSpeed = $Panel_Controls/HSlider_TargetSpeed.value
+	$Tractor.targetSpeed = $Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value
 
 	steeringWheelPosition = (Input.get_action_strength("joystick_angle_right") - Input.get_action_strength("joystick_angle_left"))
 
 	keyboardAngleChangeTimer += delta
 
-	if ($Panel_JoystickFFBSettings/CheckBox_JoystickAngle.button_pressed):
-		$Panel_Controls/HSlider_SteerAngle.value = steeringWheelPosition * 45
+	if ($Window_Settings/TabContainer_Settings/Controls/VBoxContainer_Controls/CheckBox_JoystickAngle.button_pressed):
+		$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value = steeringWheelPosition * 45
 	else:
 		if (keyboardAngleChangeTimer >= 0.01):
 			if (Input.is_action_pressed("increase_steering_angle")):
-				$Panel_Controls/HSlider_SteerAngle.value += 0.1
+				$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value += 0.1
 				keyboardAngleChangeTimer = 0
 			if (Input.is_action_pressed("decrease_steering_angle")):
-				$Panel_Controls/HSlider_SteerAngle.value -= 0.1
+				$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value -= 0.1
 				keyboardAngleChangeTimer = 0
 
 	if (Input.is_action_just_pressed("direction_forward")):
-		$Panel_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed = false
+		$Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed = false
 		joystickSpeedSetpoint = -joystickSpeedSetpoint
 
 	if (Input.is_action_just_pressed("direction_reverse")):
-		$Panel_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed = true
+		$Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/CheckBox_JoystickReverse.button_pressed = true
 		joystickSpeedSetpoint = -joystickSpeedSetpoint
 
-	if (!$Panel_Controls/CheckBox_AutomaticSteering.button_pressed):
-		$Tractor.steering = -deg_to_rad($Panel_Controls/HSlider_SteerAngle.value)
+	if (!$Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed):
+		$Tractor.steering = -deg_to_rad($Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value)
 
 	timeAfterPAOGIMessage += delta
 	timeAfterValidSteerAngleSetpoint += delta
@@ -327,7 +336,7 @@ func _physics_process(delta):
 		var checksum = getNMEAChecksum(paogi)
 		paogi += checksum
 
-		if ($Panel_Controls/CheckBox_DebugMessage_Send. is_pressed()):
+		if ($Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_DebugMessage_Send. is_pressed()):
 			print("Uptime: %1.3f s, IP: %s, port: %d: sent msg: %s" % [float(Time.get_ticks_msec() / 1000.0), udpDestAddress, udpDestPort, paogi])
 
 		paogi += "\r\n"
@@ -346,10 +355,13 @@ func _physics_process(delta):
 
 	if (timeAfterValidSteerAngleSetpoint > 1):
 		$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = false
+		
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealSpeed.value = filteredSpeed
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_RealSpeed_Value.text = "%1.2f" % filteredSpeed
 
 	updateLocationOrientation(delta)
 	handleUDPComms()
-	handleForceFeedback($Panel_JoystickFFBSettings/CheckBox_AutoSteeringFFB.button_pressed)
+	handleForceFeedback($Window_Settings/TabContainer_Settings/Controls/VBoxContainer_Controls/CheckBox_AutoSteeringFFB.button_pressed)
 
 	if (Input.is_action_just_pressed("teleport_tractor")):
 		teleportTractor($FirstPersonFlyer/ManipulatorMeshes/ManipulatorTip.global_position)
@@ -378,17 +390,20 @@ func handleUDPComms():
 				
 				steerAngleSetpoint = ((int(packet.decode_u8(8) | (packet.decode_s8(9)) << 8))) * 0.01
 				var guidanceStatus:int = packet[7];
+				
+				$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_CommandedAngle.value = steerAngleSetpoint
+				$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_CommandedAngle_Value.text = "%1.2f" % steerAngleSetpoint
 
 				packetDescription = "Steer command, setpoint: %1.2f, guidance status: %d" % [steerAngleSetpoint, guidanceStatus]
 				
 				if (guidanceStatus != 0):
-					$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = true
-					if ($Panel_JoystickFFBSettings/CheckBox_UseSteeringWheelangleForAutoSteeringAngle.button_pressed):
+					$Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed = true
+					if ($Window_Settings/TabContainer_Settings/Controls/VBoxContainer_Controls/CheckBox_UseSteeringWheelangleForAutoSteeringAngle.button_pressed):
 						$Tractor.steering = deg_to_rad(-steeringWheelPosition * 45)
 					else:
 						$Tractor.steering = deg_to_rad(-steerAngleSetpoint)
 				else:
-					$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = false
+					$Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed = false
 				
 				# Steer angle
 				var sa:int = int(-rad_to_deg($Tractor.steering) * 100)
@@ -479,16 +494,16 @@ func handleUDPComms():
 				steerSettings_Received.highPWM = packet.decode_u8(6)
 				steerSettings_Received.minPWM = packet.decode_u8(8)
 				
-				$Panel_SteerSettings/GridContainer_SteerSettings/Label_PGain_Received.text = str(steerSettings_Received.kp)
-				$Panel_SteerSettings/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = str(steerSettings_Received.highPWM)
-				$Panel_SteerSettings/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = str(steerSettings_Received.minPWM)
+				$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_PGain_Received.text = str(steerSettings_Received.kp)
+				$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = str(steerSettings_Received.highPWM)
+				$Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = str(steerSettings_Received.minPWM)
 				
 				steerSettings_ReceivedUpTime_ms = Time.get_ticks_msec()
 				
 			else:
 				packetDescription = "Unhandled packet type %d (0x%X), length: %d" % [packet[3], packet[3], packet.size()]
 			
-			if ($Panel_Controls/CheckBox_DebugMessage_Receive. is_pressed()):
+			if ($Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_DebugMessage_Receive. is_pressed()):
 				var sourceIP:String = peer.get_packet_ip()
 				var sourcePort:int = peer.get_packet_port()
 				print("Uptime: %1.3f s, IP: %s, port: %d, got msg: %s" % [float(Time.get_ticks_msec() / 1000.0), sourceIP, sourcePort, packetDescription])
@@ -563,14 +578,14 @@ func handleForceFeedback(active:bool):
 			ffbInitSuccessful = initForceFeedback()
 
 		if (ffbInitSuccessful):
-			if ($Panel_Controls/CheckBox_AutomaticSteering.button_pressed):
+			if ($Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed):
 				var steerSetting:SteerSettings = SteerSettings.new()
 				
-				match ($Panel_SteerSettings/OptionButton_ParametersToUse.selected):
+				match ($Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/HBoxContainer/OptionButton_ParametersToUse.selected):
 					0:	# Local
-						steerSetting.kp = $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_PGain_Local.value
-						steerSetting.highPWM = $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value
-						steerSetting.minPWM = $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value
+						steerSetting.kp = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_PGain_Local.value
+						steerSetting.highPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value
+						steerSetting.minPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value
 					1:	# Received
 						steerSetting = steerSettings_Received
 				
@@ -588,8 +603,8 @@ func handleForceFeedback(active:bool):
 		ffbInitSuccessful = false
 		ffbInitTried = false
 	
-	$Panel_JoystickFFBSettings/HSlider_Force.value = forceFeedbackForce
-	$Panel_JoystickFFBSettings/Label_Force_Value.text = "%1.2f" % forceFeedbackForce
+	$Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce/HSlider_Force.value = forceFeedbackForce
+	$Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce/Label_Force_Value.text = "%1.2f" % forceFeedbackForce
 
 func initForceFeedback() -> bool:
 	if (ffbNode == null):
@@ -657,67 +672,12 @@ func calcSteeringPID(steerAngleError:float, steerSettings:SteerSettings) -> floa
 
 	return clamp(pwmDrive / 255.0, -1, 1)
 	
-const configFileName:String = "res://AgOpenGPSPoC.cfg"
-	
-func loadConfig():
-	var config:ConfigFile = ConfigFile.new()
-
-	if (config.load(configFileName) != OK):
-		print("Config file not found, using defaults.")
-		return
-
-	$Panel_Controls/CheckBox_DebugMessage_Receive.button_pressed = config.get_value("PrintDebugMessages", "Receive")
-	$Panel_Controls/CheckBox_DebugMessage_Send.button_pressed = config.get_value("PrintDebugMessages", "Send")
-
-	$Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed = config.get_value("Visibility", "JoystickSettings")
-
-	$Panel_JoystickFFBSettings/CheckBox_JoystickAngle.button_pressed = config.get_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_Manual")
-	$Panel_JoystickFFBSettings/CheckBox_JoystickSpeed.button_pressed = config.get_value("Joystick", "UseJoystickOrPedalsForSpeed")
-	$Panel_JoystickFFBSettings/CheckBox_AutoSteeringFFB.button_pressed = config.get_value("ForceFeedback", "AutoSteeringFFB")
-	$Panel_JoystickFFBSettings/CheckBox_UseSteeringWheelangleForAutoSteeringAngle.button_pressed = config.get_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_AutomaticSteering")
-	$Panel_JoystickFFBSettings/CheckBox_ShowSteerSettings.button_pressed = config.get_value("Visibility", "ShowSteerSettings")
-	
-	$Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_PGain_Local.value = config.get_value("SteerSettings_Local", "PGain")
-	$Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value = config.get_value("SteerSettings_Local", "MaximumLimit")
-	$Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value = config.get_value("SteerSettings_Local", "MinimumToMove")
-	
-	$Panel_SteerSettings/GridContainer_SteerSettings/Label_PGain_Received.text = config.get_value("SteerSettings_Received", "PGain")
-	$Panel_SteerSettings/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = config.get_value("SteerSettings_Received", "MaximumLimit")
-	$Panel_SteerSettings/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = config.get_value("SteerSettings_Received", "MinimumToMove")
-	
-	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = config.get_value("Visibility", "Show3rdPartyCreditsOnStart", false)
-
-func saveConfig():
-	var config:ConfigFile = ConfigFile.new()
-
-	config.set_value("PrintDebugMessages", "Receive", $Panel_Controls/CheckBox_DebugMessage_Receive.button_pressed)
-	config.set_value("PrintDebugMessages", "Send", $Panel_Controls/CheckBox_DebugMessage_Send.button_pressed)
-
-	config.set_value("Visibility", "JoystickSettings", $Panel_Controls/CheckBox_ShowJoystickSettings.button_pressed)
-
-	config.set_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_Manual", $Panel_JoystickFFBSettings/CheckBox_JoystickAngle.button_pressed)
-	config.set_value("Joystick", "UseJoystickOrPedalsForSpeed", $Panel_JoystickFFBSettings/CheckBox_JoystickSpeed.button_pressed)
-	config.set_value("ForceFeedback", "AutoSteeringFFB", $Panel_JoystickFFBSettings/CheckBox_AutoSteeringFFB.button_pressed)
-	config.set_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_AutomaticSteering", $Panel_JoystickFFBSettings/CheckBox_UseSteeringWheelangleForAutoSteeringAngle.button_pressed)
-	config.set_value("Visibility", "ShowSteerSettings", $Panel_JoystickFFBSettings/CheckBox_ShowSteerSettings.button_pressed)
-
-	config.set_value("SteerSettings_Local", "PGain", $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_PGain_Local.value)
-	config.set_value("SteerSettings_Local", "MaximumLimit", $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value)
-	config.set_value("SteerSettings_Local", "MinimumToMove", $Panel_SteerSettings/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value)
-
-	config.set_value("SteerSettings_Received", "PGain", $Panel_SteerSettings/GridContainer_SteerSettings/Label_PGain_Received.text)
-	config.set_value("SteerSettings_Received", "MaximumLimit", $Panel_SteerSettings/GridContainer_SteerSettings/Label_MaximumLimit_Received.text)
-	config.set_value("SteerSettings_Received", "MinimumToMove", $Panel_SteerSettings/GridContainer_SteerSettings/Label_MinimumToMove_Received.text)
-	
-	config.set_value("Visibility", "Show3rdPartyCreditsOnStart", $Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
-
-	config.save(configFileName)
-
-
 func _on_spin_box_max_speed_value_changed(value):
 	maxDrivingSpeed = value
-	$Panel_Controls/HSlider_TargetSpeed.min_value = -value
-	$Panel_Controls/HSlider_TargetSpeed.max_value = value
+	$Panel_Controls/GridContainer_Sliders/HSlider_TargetSpeed.min_value = -value
+	$Panel_Controls/GridContainer_Sliders/HSlider_TargetSpeed.max_value = value
+	$Panel_Controls/GridContainer_Sliders/HSlider_RealSpeed.min_value = -value
+	$Panel_Controls/GridContainer_Sliders/HSlider_RealSpeed.max_value = value
 
 func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
 	# This is for 3rd party credits url-handling
@@ -725,6 +685,7 @@ func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
 
 func _on_button_close_3_rd_party_credits_pressed():
 	$Panel_3rdPartyCredits.visible = false
+	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 
 func _on_button_show_3_rd_party_assets_pressed():
 	$Panel_3rdPartyCredits.visible = true
@@ -744,4 +705,11 @@ func teleportTractor(destCoords:Vector3):
 	var tractorNode:VehicleBody3D = $Tractor
 	tractorNode.global_transform.origin = teleportDestCoords
 	tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
-	
+
+func _on_window_settings_close_requested():
+	$Window_Settings.visible = false
+
+func _on_button_show_settings_pressed():
+	$Window_Settings.visible = true
+	$Window_Settings.grab_focus()
+
