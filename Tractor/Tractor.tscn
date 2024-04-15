@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://bpvvyk6546855"]
+[gd_scene load_steps=25 format=3 uid="uid://bpvvyk6546855"]
 
 [ext_resource type="PackedScene" uid="uid://bpl3kgkfi7gse" path="res://Assets/Models/Tractor/Tractor_Wheeless_gltf/Tractor_Wheeless.gltf" id="1_lulf2"]
 [ext_resource type="Script" path="res://Tractor/Tractor.gd" id="1_p1t78"]
@@ -45,8 +45,8 @@ radial_segments = 32
 [sub_resource type="BoxMesh" id="BoxMesh_kqxe3"]
 size = Vector3(10, 0.3, 0.1)
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lfmtm"]
-points = PackedVector3Array(5, 0.15, 0.05, 5, 0.15, -0.05, -5, 0.15, 0.05, 5, -0.15, 0.05, 5, -0.15, -0.05, -5, 0.15, -0.05, -5, -0.15, 0.05, -5, -0.15, -0.05)
+[sub_resource type="BoxShape3D" id="BoxShape3D_2rngh"]
+size = Vector3(10, 0.3, 0.1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i6uve"]
 resource_name = "Material_10"
@@ -63,12 +63,28 @@ rings = 1
 cap_top = false
 cap_bottom = false
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e08vq"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 0, 0.501961)
+disable_receive_shadows = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_pg6t8"]
+size = Vector3(0.1, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kte43"]
+size = Vector3(10, 1, 0.1)
+
 [node name="Tractor" type="VehicleBody3D"]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 mass = 7000.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0)
 script = ExtResource("1_p1t78")
+implementWidth = null
+implementColliding = null
+implementVisible = null
+crosshairVisible = null
 
 [node name="GNSSAntenna" parent="." instance=ExtResource("9_b1jae")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2.9, -1.39)
@@ -201,7 +217,7 @@ mesh = SubResource("BoxMesh_kqxe3")
 
 [node name="CollisionShape_Implement" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -2.5)
-shape = SubResource("ConvexPolygonShape3D_lfmtm")
+shape = SubResource("BoxShape3D_2rngh")
 
 [node name="RearWheelObject_Left" parent="." instance=ExtResource("4_aqjm6")]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 1.1, 0.9, -1.39)
@@ -219,5 +235,18 @@ transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -1.2, 
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0.7, 1.25)
 material_override = SubResource("StandardMaterial3D_i6uve")
 mesh = SubResource("CylinderMesh_kajdr")
+
+[node name="Crosshair" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.39)
+visible = false
+
+[node name="FrontBack" type="MeshInstance3D" parent="Crosshair"]
+material_override = SubResource("StandardMaterial3D_e08vq")
+cast_shadow = 0
+mesh = SubResource("BoxMesh_pg6t8")
+
+[node name="LeftRight" type="MeshInstance3D" parent="Crosshair"]
+material_override = SubResource("StandardMaterial3D_e08vq")
+mesh = SubResource("BoxMesh_kte43")
 
 [editable path="Tractor_Wheeless"]

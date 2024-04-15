@@ -19,6 +19,39 @@ extends VehicleBody3D
 	get:
 		return hideEverythingButWheels
 
+@export var implementWidth:float = 10:
+	set(newWidth):
+		if (implementWidth != newWidth):
+			updateImplementWidth(newWidth)
+		implementWidth = newWidth
+	get:
+		return implementWidth
+
+@export var implementColliding:bool = true:
+	set(colliding):
+		if (implementColliding != colliding):
+			$CollisionShape_Implement.disabled = !colliding
+		implementColliding = colliding
+	get:
+		return implementColliding
+
+@export var implementVisible:bool = true:
+	set(newVisible):
+		if (implementVisible != newVisible):
+			$CollisionShape_Implement.visible = newVisible
+			$Implement.visible = newVisible
+		implementVisible = newVisible
+	get:
+		return implementVisible
+
+@export var crosshairVisible:bool = true:
+	set(newVisible):
+		if (crosshairVisible != newVisible):
+			$Crosshair.visible = newVisible
+		crosshairVisible = newVisible
+	get:
+		return crosshairVisible
+
 # Latitude and longitude are GNSS-antenna's values
 var latitude:float = 0		# in deg
 var longitude:float = 0		# in deg
@@ -123,3 +156,7 @@ func updateEverythingButWheelsVisibility(hideFlag):
 	$Tractor_Wheeless.visible = !hideFlag
 	$FakeFrontAxle.visible = !hideFlag
 	$GNSSAntenna.visible = !hideFlag
+
+func updateImplementWidth(newWidth:float):
+	$Implement.mesh.size.x = newWidth
+	$CollisionShape_Implement.shape.size.x = newWidth
