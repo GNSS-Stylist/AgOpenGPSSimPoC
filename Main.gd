@@ -205,6 +205,18 @@ func cameraSwitch():
 			$CameraSwitchCamera.far = currentFar
 			$CameraSwitchCamera.fov = currentFov
 			$CameraSwitchCamera.current = true
+	
+	if ($Tractor/Camera_Up.current):
+		var multiplier:float = 1.0
+		if (Input.is_action_just_released("zoom_in_mousewheel")):
+			multiplier = 1.0 / 1.2
+		if (Input.is_action_just_released("zoom_out_mousewheel")):
+			multiplier = 1.2
+		
+		var height = $Tractor/Camera_Up.transform.origin.y
+		height *= multiplier
+		height = clamp(height, 5, 1000)
+		$Tractor/Camera_Up.transform.origin.y = height
 
 var filteredSpeed:float = 0
 const speedFilterCoeff:float = 0.05
