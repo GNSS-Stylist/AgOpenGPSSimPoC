@@ -21,6 +21,7 @@ func loadConfig():
 	$General/VBoxContainer_General/CheckBox_DebugMessage_Send.button_pressed = config.get_value("PrintDebugMessages", "Send", false)
 	$General/VBoxContainer_General/CheckBox_ViewLocationOrientation.button_pressed = config.get_value("Visibility", "ViewLocationOrientation", false)
 	$General/VBoxContainer_General/CheckBox_ViewFFBJoystickInfo.button_pressed = config.get_value("Visibility", "ViewFFBAndJoystickInfo", false)
+	$General/VBoxContainer_General/CheckBox_Shadows.button_pressed = config.get_value("Visibility", "RenderShadows", true)
 
 	$Controls/VBoxContainer_Controls/CheckBox_JoystickAngle.button_pressed = config.get_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_Manual", false)
 	$Controls/VBoxContainer_Controls/CheckBox_JoystickSpeed.button_pressed = config.get_value("Joystick", "UseJoystickOrPedalsForSpeed", false)
@@ -55,6 +56,7 @@ func saveConfig():
 	config.set_value("PrintDebugMessages", "Send", $General/VBoxContainer_General/CheckBox_DebugMessage_Send.button_pressed)
 	config.set_value("Visibility", "ViewLocationOrientation", $General/VBoxContainer_General/CheckBox_ViewLocationOrientation.button_pressed)
 	config.set_value("Visibility", "ViewFFBAndJoystickInfo", $General/VBoxContainer_General/CheckBox_ViewFFBJoystickInfo.button_pressed)
+	config.set_value("Visibility", "RenderShadows", $General/VBoxContainer_General/CheckBox_Shadows.button_pressed)
 
 	config.set_value("Joystick", "UseJoystickOrSteeringWheelForWheelangle_Manual", $Controls/VBoxContainer_Controls/CheckBox_JoystickAngle.button_pressed)
 	config.set_value("Joystick", "UseJoystickOrPedalsForSpeed", $Controls/VBoxContainer_Controls/CheckBox_JoystickSpeed.button_pressed)

@@ -136,6 +136,8 @@ func _process(_delta):
 	var steerAngleDeg = rad_to_deg(-$Tractor.steering)
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealAngle.value = steerAngleDeg
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_RealAngle_Value.text = "%1.2f" %steerAngleDeg
+	$DirectionalLight3D.shadow_enabled = $Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_Shadows.button_pressed
+	$Window_Settings/TabContainer_Settings/General/VBoxContainer_General/Label_Current_FPS.text = "Current FPS: %1.1f" % Engine.get_frames_per_second()
 	
 const camera_InterpolationTime_Fast = 500
 const camera_InterpolationTime_Slow = 2000

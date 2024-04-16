@@ -11,9 +11,12 @@ script = ExtResource("1_gl0sx")
 layout_mode = 2
 
 [node name="VBoxContainer_General" type="VBoxContainer" parent="General"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="General/VBoxContainer_General"]
 layout_mode = 2
@@ -30,6 +33,14 @@ text = "View tractor location & orientation"
 [node name="CheckBox_ViewFFBJoystickInfo" type="CheckBox" parent="General/VBoxContainer_General"]
 layout_mode = 2
 text = "View force feedback & joystick / pedal info"
+
+[node name="CheckBox_Shadows" type="CheckBox" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "Render shadows (uncheck for higher frame rate)"
+
+[node name="Label_Current_FPS" type="Label" parent="General/VBoxContainer_General"]
+layout_mode = 2
+text = "Current FPS: 0"
 
 [node name="Controls" type="Panel" parent="."]
 visible = false
