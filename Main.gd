@@ -56,7 +56,12 @@ func _exit_tree():
 	if (ffbInitSuccessful):
 		destroyForceFeedbackEffect()
 
-var tractorTeleportRequest:bool = true
+# Not sure what's going on here... Looks like the raycast to find ground level
+# does not work immediately after generating new terrain
+# (even when awaiting NoiseTexture to be updated).
+# So now just counting down some physics frames before teleporting
+const tractorTeleportRequestCounterStartVal:int = 5
+var tractorTeleportRequestCounter:int = 5
 
 func updateTerrain():
 	await terrainHeightmapNoiseTexture.changed
@@ -95,7 +100,7 @@ func updateTerrain():
 	terrainMaterial.set_shader_parameter("heightMultiplier", terrainHeightMultiplier)
 	terrainMaterial.set_shader_parameter("edgeRise", terrainEdgeRise)
 
-	tractorTeleportRequest = true
+	tractorTeleportRequestCounter = tractorTeleportRequestCounterStartVal
 # The world is not ready for teleporting tractors at this stage?
 # (So we need to continue using fossil fuels to move them around. :( )
 #	teleportTractor($Tractor.global_transform.origin)
@@ -266,9 +271,12 @@ func _physics_process(delta):
 	var newTerrainRandomSeed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
 	var newTerrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
 	
-	if (tractorTeleportRequest):
+	if (tractorTeleportRequestCounter > 0):
+		tractorTeleportRequestCounter -= 1
+	
+	if (tractorTeleportRequestCounter == 0):
 		teleportTractor($Tractor.global_transform.origin)
-		tractorTeleportRequest = false
+		tractorTeleportRequestCounter = -1
 	
 	if ((newTerrainRandomSeed != terrainHeightmapNoiseTexture.noise.seed) ||
 			(newTerrainHeightMultiplier != terrainHeightMultiplier)):
@@ -722,11 +730,21 @@ func teleportTractor(destCoords:Vector3):
 	params.collision_mask = 2	# Collide only to terrain
 	var result = space_state.intersect_ray(params)
 	var teleportDestCoords = destCoords
+	var teleportDestNormal:Vector3 = Vector3.UP
 	if (!result.is_empty()):
 		teleportDestCoords = result.position + Vector3(0, 1, 0)
+		teleportDestNormal = result.normal
 	var tractorNode:VehicleBody3D = $Tractor
+	
+	# Try to orient tractor to the destination's surface normal
+	var tractorForwardVec:Vector3 = -tractorNode.global_transform.basis.z
+	var newX:Vector3 = teleportDestNormal.cross(tractorForwardVec).normalized()
+	var newZ:Vector3 = teleportDestNormal.cross(newX).normalized()
+
+	var newBasic:Basis = Basis(-newX, teleportDestNormal, newZ)
+	
 	tractorNode.global_transform.origin = teleportDestCoords
-	tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
+	tractorNode.global_transform.basis = newBasic
 	tractorNode.linear_velocity = Vector3(tractorNode.linear_velocity.x, 0, tractorNode.linear_velocity.z)
 
 func _on_window_settings_close_requested():
