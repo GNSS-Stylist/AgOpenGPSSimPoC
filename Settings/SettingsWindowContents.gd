@@ -1,10 +1,12 @@
 extends TabContainer
 
-func _ready():
-	loadConfig()
+# Replaced loading/saving here with main window calls
+# (not sure about creation/exit_tree-order)
+#func _ready():
+#	loadConfig()
 
-func _exit_tree():
-	saveConfig()
+#func _exit_tree():
+#	saveConfig()
 
 const configFileName:String = "res://AgOpenGPSPoC.cfg"
 
@@ -15,7 +17,6 @@ func loadConfig():
 
 	if (config.load(configFileName) != OK):
 		print("Config file not found, using defaults.")
-		return
 
 	$General/VBoxContainer_General/CheckBox_DebugMessage_Receive.button_pressed = config.get_value("PrintDebugMessages", "Receive", false)
 	$General/VBoxContainer_General/CheckBox_DebugMessage_Send.button_pressed = config.get_value("PrintDebugMessages", "Send", false)
@@ -32,9 +33,9 @@ func loadConfig():
 	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value = config.get_value("SteerSettings_Local", "MaximumLimit", 255)
 	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value = config.get_value("SteerSettings_Local", "MinimumToMove", 0)
 	
-	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_PGain_Received.text = config.get_value("SteerSettings_Received", "PGain", 0)
-	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = config.get_value("SteerSettings_Received", "MaximumLimit", 0)
-	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = config.get_value("SteerSettings_Received", "MinimumToMove", 0)
+	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_PGain_Received.text = config.get_value("SteerSettings_Received", "PGain", "0")
+	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MaximumLimit_Received.text = config.get_value("SteerSettings_Received", "MaximumLimit", "0")
+	$SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MinimumToMove_Received.text = config.get_value("SteerSettings_Received", "MinimumToMove", "0")
 	$SteerSettings/VBoxContainer/HBoxContainer/OptionButton_ParametersToUse.selected = config.get_value("SteerSettings", "ParametersToUse", 0)
 
 	$Machine/VBoxContainer_Visibilities/CheckBox_HideObstacles.button_pressed = config.get_value("Visibility", "HideObstacles", false)

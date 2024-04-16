@@ -32,6 +32,9 @@ var maxDrivingSpeed:float = 24
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	# Not sure about creation order so load settings here to be safe
+	$Window_Settings/TabContainer_Settings.loadConfig()
+	
 	terrainHeightmapNoiseTexture.noise.seed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
 	terrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
 	updateTerrain()
@@ -48,6 +51,8 @@ func _ready():
 	udpServer.listen(udpServerPort)
 
 func _exit_tree():
+	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
+	$Window_Settings/TabContainer_Settings.saveConfig();
 	if (ffbInitSuccessful):
 		destroyForceFeedbackEffect()
 
@@ -703,7 +708,6 @@ func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
 
 func _on_button_close_3_rd_party_credits_pressed():
 	$Panel_3rdPartyCredits.visible = false
-	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 
 func _on_button_show_3_rd_party_assets_pressed():
 	$Panel_3rdPartyCredits.visible = true
