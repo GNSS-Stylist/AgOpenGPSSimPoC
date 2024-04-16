@@ -250,7 +250,7 @@ func _on_h_slider_target_speed_value_changed(value):
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_TargetSpeed_Value.text = "%1.1f" % value
 
 func _on_button_reset_steer_angle_and_speed_pressed():
-	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngleAngle.value = 0
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value = 0
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value = 0
 	joystickSpeedSetpoint = 0
 
@@ -372,7 +372,7 @@ func _physics_process(delta):
 #		print(getNMEAChecksum(testNMEA))
 
 	if (timeAfterValidSteerAngleSetpoint > 1):
-		$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = false
+		$Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed = false
 		
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealSpeed.value = filteredSpeed
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_RealSpeed_Value.text = "%1.2f" % filteredSpeed
