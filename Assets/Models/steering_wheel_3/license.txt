@@ -1,0 +1,11 @@
+Model Information:
+* title:	STEERING WHEEL 3
+* source:	https://sketchfab.com/3d-models/steering-wheel-3-2daa191cdecd41b1bd994353f9b1b986
+* author:	sedayuzlu (https://sketchfab.com/sedayuzlu)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "STEERING WHEEL 3" (https://sketchfab.com/3d-models/steering-wheel-3-2daa191cdecd41b1bd994353f9b1b986) by sedayuzlu (https://sketchfab.com/sedayuzlu) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

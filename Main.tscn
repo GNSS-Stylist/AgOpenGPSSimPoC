@@ -1,13 +1,44 @@
-[gd_scene load_steps=21 format=3 uid="uid://dssecwmc05qlq"]
+[gd_scene load_steps=34 format=3 uid="uid://dssecwmc05qlq"]
 
 [ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
 [ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
 [ext_resource type="PackedScene" uid="uid://be3msxv4st7e1" path="res://FirstPersonFlyer/FirstPersonFlyer.tscn" id="3_82cgc"]
-[ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor.tscn" id="4_tsqja"]
+[ext_resource type="Texture2D" uid="uid://cd625u6i65jr0" path="res://Assets/Fields_4096x4096.png" id="3_h3exi"]
+[ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor_Old/Tractor_Old.tscn" id="4_tsqja"]
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
+[ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
+[ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
+[ext_resource type="PackedScene" uid="uid://cwve0aixwkq2u" path="res://Settings/SettingsWindowContents.tscn" id="9_4p8ky"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
 seed = 3
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_tn377"]
+width = 100
+height = 100
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_jlbij")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fb2jh"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_top = 3
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_55e0x"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3jevl"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_klnu0"]
+border_width_top = 3
+border_color = Color(0, 1, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ewhcx"]
+border_width_top = 3
+border_color = Color(0.501961, 0.501961, 0.501961, 1)
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dnqro"]
 width = 100
@@ -24,20 +55,29 @@ noise = SubResource("FastNoiseLite_00ssp")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_77m2g"]
 render_priority = 0
 shader = ExtResource("2_qqamv")
-shader_parameter/heightMultiplier = 62.445
-shader_parameter/insideFieldAlbedo = Color(0, 1, 0.121569, 1)
-shader_parameter/outsideFieldAlbedo = Color(1, 1, 1, 1)
-shader_parameter/textureScale = Vector2(10, 10)
-shader_parameter/fieldRadius = 0.1
+shader_parameter/heightMultiplier = 50.0
+shader_parameter/terrainTextureScale = Vector2(10, 10)
 shader_parameter/gridDist = 0.01
 shader_parameter/gridWidth = 0.02
+shader_parameter/edgeRise = 10.0
 shader_parameter/heightmap = SubResource("NoiseTexture2D_dnqro")
 shader_parameter/terrainTexture = SubResource("NoiseTexture2D_vtqow")
+shader_parameter/fieldsTexture = ExtResource("3_h3exi")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_hg4uv"]
 size = Vector2(1000, 1000)
 subdivide_width = 100
 subdivide_depth = 100
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqdkg"]
+albedo_texture = ExtResource("5_7utf1")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_nryma"]
+size = Vector3(20, 20, 20)
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_w5fvs"]
+points = PackedVector3Array(10, 10, 10, 10, 10, -10, -10, 10, 10, 10, -10, 10, 10, -10, -10, -10, 10, -10, -10, -10, 10, -10, -10, -10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gycji"]
 albedo_texture = ExtResource("5_7utf1")
@@ -58,110 +98,210 @@ sky_material = SubResource("ProceduralSkyMaterial_v3qjp")
 background_mode = 2
 sky = SubResource("Sky_wky0i")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mqdkg"]
-albedo_texture = ExtResource("5_7utf1")
-uv1_triplanar = true
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bxulg"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0, 1, 1, 0.254902)
 
-[sub_resource type="BoxMesh" id="BoxMesh_nryma"]
-size = Vector3(20, 20, 20)
+[sub_resource type="PlaneMesh" id="PlaneMesh_3bo1e"]
+size = Vector2(20, 20)
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_w5fvs"]
-points = PackedVector3Array(10, 10, 10, 10, 10, -10, -10, 10, 10, 10, -10, 10, 10, -10, -10, -10, 10, -10, -10, -10, 10, -10, -10, -10)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_65nd2"]
+bg_color = Color(0, 0, 0, 1)
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_5mcwj")
+terrainHeightmapNoiseTexture = SubResource("NoiseTexture2D_tn377")
 
 [node name="Panel_Controls" type="Panel" parent="."]
-offset_right = 402.0
-offset_bottom = 177.0
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 445.0
+offset_bottom = 285.0
 
-[node name="HSlider_SteerAngle" type="HSlider" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 130.0
-offset_right = 330.0
-offset_bottom = 26.0
+[node name="VBoxContainer_Controls" type="VBoxContainer" parent="Panel_Controls"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer_Sliders" type="GridContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+columns = 3
+
+[node name="Label_HIDAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "HID angle:"
+horizontal_alignment = 2
+
+[node name="HSlider_HIDAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/slider = SubResource("StyleBoxFlat_fb2jh")
 min_value = -45.0
 max_value = 45.0
+step = 0.01
 tick_count = 5
 ticks_on_borders = true
 
-[node name="Label_SteerAngle" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_right = 120.0
-offset_bottom = 26.0
-text = "Steer angle:"
+[node name="Label_HIDAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "0"
+
+[node name="Label_CommandedAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Commanded angle:"
+
+[node name="HSlider_CommandedAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_55e0x")
+min_value = -45.0
+max_value = 45.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_CommandedAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_RealAngle" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Real angle:"
 horizontal_alignment = 2
 
-[node name="Label_TargetSpeed" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 32.0
-offset_right = 120.0
-offset_bottom = 58.0
+[node name="HSlider_RealAngle" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_3jevl")
+min_value = -45.0
+max_value = 45.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_RealAngle_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "0"
+
+[node name="Label_TargetSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "Target speed:"
 horizontal_alignment = 2
 
-[node name="HSlider_TargetSpeed" type="HSlider" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 130.0
-offset_top = 32.0
-offset_right = 330.0
-offset_bottom = 58.0
-min_value = -30.0
-max_value = 30.0
+[node name="HSlider_TargetSpeed" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_klnu0")
+min_value = -24.0
+max_value = 24.0
+step = 0.1
 tick_count = 5
 ticks_on_borders = true
 
-[node name="Label_SteerAngle_Value" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 350.0
-offset_right = 390.0
-offset_bottom = 26.0
+[node name="Label_TargetSpeed_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "0"
 
-[node name="Label_TargetSpeed_Value" type="Label" parent="Panel_Controls"]
-layout_mode = 0
-offset_left = 350.0
-offset_top = 32.0
-offset_right = 390.0
-offset_bottom = 58.0
+[node name="Label_RealSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+text = "Real speed:"
+horizontal_alignment = 2
+
+[node name="HSlider_RealSpeed" type="HSlider" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
+theme_override_styles/slider = SubResource("StyleBoxFlat_ewhcx")
+min_value = -24.0
+max_value = 24.0
+step = 0.01
+editable = false
+scrollable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_RealSpeed_Value" type="Label" parent="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders"]
+layout_mode = 2
 text = "0"
 
-[node name="Button_ResetSteerAngleAndSpeed" type="Button" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 64.0
-offset_right = 51.0
-offset_bottom = 95.0
-text = "Reset manual angle and speed"
+[node name="Button_ResetSteerAngleAndSpeed" type="Button" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+text = "Reset manual angle and speed (when using keyboard)"
 
-[node name="CheckBox_AutomaticSteering" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 96.0
-offset_right = 176.0
-offset_bottom = 127.0
+[node name="HBoxContainer_MaxSpeed" type="HBoxContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
+
+[node name="Label_MaxSpeed" type="Label" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed"]
+layout_mode = 2
+text = "Max speed (km/h):"
+
+[node name="SpinBox_MaxSpeed" type="SpinBox" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed"]
+layout_mode = 2
+min_value = 1.0
+max_value = 300.0
+value = 24.0
+
+[node name="CheckBox_AutomaticSteering" type="CheckBox" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
 disabled = true
 text = "Automatic steering"
 
-[node name="CheckBox_DebugMessage_Receive" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 122.0
-offset_right = 270.0
-offset_bottom = 153.0
-text = "Debug message prints (receive)"
+[node name="HBoxContainer_Settings_3rdPartyAssets" type="HBoxContainer" parent="Panel_Controls/VBoxContainer_Controls"]
+layout_mode = 2
 
-[node name="CheckBox_DebugMessage_Send" type="CheckBox" parent="Panel_Controls"]
-layout_mode = 0
-offset_top = 147.0
-offset_right = 251.0
-offset_bottom = 178.0
-text = "Debug message prints (send)"
+[node name="Button_ShowSettings" type="Button" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets"]
+layout_mode = 2
+text = "Settings"
+
+[node name="Button_Show3rdPartyAssets" type="Button" parent="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets"]
+layout_mode = 2
+text = "Show 3rd party assets used"
 
 [node name="Terrain" type="MeshInstance3D" parent="."]
 material_override = SubResource("ShaderMaterial_77m2g")
+cast_shadow = 0
 mesh = SubResource("PlaneMesh_hg4uv")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Terrain"]
+collision_layer = 3
+collision_mask = 3
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/StaticBody3D"]
+
+[node name="Obstacles" type="Node3D" parent="."]
+process_mode = 4
+visible = false
+
+[node name="Ramp" type="MeshInstance3D" parent="Obstacles"]
+transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 5.39682, 24.7912)
+material_override = SubResource("StandardMaterial3D_mqdkg")
+mesh = SubResource("BoxMesh_nryma")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/Ramp"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/Ramp/StaticBody3D"]
+transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_w5fvs")
+
+[node name="StaticBox" type="MeshInstance3D" parent="Obstacles"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 14.605, 0)
+material_override = SubResource("StandardMaterial3D_gycji")
+mesh = SubResource("BoxMesh_qhte3")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Obstacles/StaticBox"]
+collision_layer = 3
+collision_mask = 3
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Obstacles/StaticBox/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_wwbtj")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.862576, 0.505928, 0, -0.505928, 0.862576, 0, 173.442, 162.833)
@@ -173,40 +313,25 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 42, 10)
 transform = Transform3D(-1, 8.74228e-08, 0, -7.35672e-08, -0.841511, 0.54024, 4.72293e-08, 0.54024, 0.841511, 0, 120.613, 0.0153999)
 shadow_enabled = true
 
-[node name="Tractor" parent="." instance=ExtResource("4_tsqja")]
-transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, 0, 19.5076, 0)
-
-[node name="Camera_Follow" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-1, 3.96891e-08, -7.78943e-08, 0, 0.891006, 0.45399, 8.74228e-08, 0.45399, -0.891006, 0, 8.15, -6.021)
-current = true
-
-[node name="Camera_Driver" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-1, 4.28408e-08, -9.68575e-08, 0, 0.906308, 0.422618, 1.04308e-07, 0.422618, -0.906308, 0, 1.229, 1.107)
-
-[node name="Camera_Angled" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
-
-[node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
-transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
-
-[node name="StaticBox" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 18.322, 0)
-material_override = SubResource("StandardMaterial3D_gycji")
-mesh = SubResource("BoxMesh_qhte3")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="StaticBox"]
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBox/StaticBody3D"]
-shape = SubResource("ConvexPolygonShape3D_wwbtj")
+[node name="Tractor_Old" parent="." instance=ExtResource("4_tsqja")]
+transform = Transform3D(-0.998836, 0, 0.0482397, 0, 1, 0, -0.0482397, 0, -0.998836, -459.644, 29.0995, 464.35)
+steering = 0.349066
+targetSpeed = 5.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_27gc0")
+
+[node name="GapBox" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.994543, 0.104326, -0.00113117, -0.104068, 0.99119, -0.0819307, -0.0074263, 0.0816013, 0.996637, 0, 21.4747, -94.1141)
+visible = false
+material_override = SubResource("StandardMaterial3D_bxulg")
+mesh = SubResource("PlaneMesh_3bo1e")
 
 [node name="Panel_LocationOrientation" type="Panel" parent="."]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -186.0
+offset_top = -160.0
 offset_right = 232.0
 grow_vertical = 0
 
@@ -222,6 +347,7 @@ layout_mode = 0
 offset_left = 110.0
 offset_right = 210.0
 offset_bottom = 23.0
+horizontal_alignment = 2
 
 [node name="Label_Longitude" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -237,6 +363,7 @@ offset_left = 110.0
 offset_top = 32.0
 offset_right = 210.0
 offset_bottom = 55.0
+horizontal_alignment = 2
 
 [node name="Label_Altitude" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -252,6 +379,7 @@ offset_left = 110.0
 offset_top = 64.0
 offset_right = 210.0
 offset_bottom = 87.0
+horizontal_alignment = 2
 
 [node name="Label_Heading" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -267,6 +395,7 @@ offset_left = 110.0
 offset_top = 96.0
 offset_right = 210.0
 offset_bottom = 119.0
+horizontal_alignment = 2
 
 [node name="Label_Roll" type="Label" parent="Panel_LocationOrientation"]
 layout_mode = 0
@@ -282,33 +411,203 @@ offset_left = 110.0
 offset_top = 128.0
 offset_right = 210.0
 offset_bottom = 151.0
-
-[node name="Label_Speed" type="Label" parent="Panel_LocationOrientation"]
-layout_mode = 0
-offset_top = 156.0
-offset_right = 100.0
-offset_bottom = 182.0
-text = "Speed:"
 horizontal_alignment = 2
 
-[node name="Label_Speed_Value" type="Label" parent="Panel_LocationOrientation"]
+[node name="Panel_JoystickFFBSettings" type="Panel" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -446.0
+offset_bottom = 65.0
+grow_horizontal = 0
+
+[node name="VBoxContainer_JoystickFFBSettings" type="VBoxContainer" parent="Panel_JoystickFFBSettings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CheckBox_JoystickReverse" type="CheckBox" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings"]
+layout_mode = 2
+text = "Joystick / pedal driving direction reverse
+"
+
+[node name="HBoxContainer_FFBForce" type="HBoxContainer" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings"]
+layout_mode = 2
+
+[node name="Label_Force" type="Label" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+layout_mode = 2
+text = "Force feedback force:"
+horizontal_alignment = 2
+
+[node name="HSlider_Force" type="HSlider" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = -1.0
+max_value = 1.0
+step = 0.01
+editable = false
+tick_count = 5
+ticks_on_borders = true
+
+[node name="Label_Force_Value" type="Label" parent="Panel_JoystickFFBSettings/VBoxContainer_JoystickFFBSettings/HBoxContainer_FFBForce"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+text = "0.00
+"
+horizontal_alignment = 2
+
+[node name="Tractor" parent="." instance=ExtResource("7_4dsvj")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 15.1901, 0)
+implementWidth = 10.0
+implementColliding = true
+implementVisible = true
+crosshairVisible = true
+
+[node name="Camera_Back_Fixed" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, 4.44611e-08, -7.56415e-08, 1.05492e-08, 0.916775, 0.399405, 8.71042e-08, 0.399405, -0.916775, 0, 5.14463, -6.10679)
+
+[node name="Camera_Driver" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, 5.00403e-08, -9.20214e-08, 1.41722e-08, 0.935067, 0.35447, 1.03784e-07, 0.35447, -0.935067, 6.77984e-09, 2.49752, -0.600662)
+
+[node name="Camera_Angled" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.71325, 0.13374, -0.688031, 0, 0.981627, 0.190809, 0.700909, 0.136095, -0.700146, -9.55713, 4.76142, -5.78461)
+
+[node name="Camera_Angled_2" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-0.803857, -0.0456342, 0.59307, 0, 0.997053, 0.076719, -0.594823, 0.0616711, -0.801488, 8.787, 6.321, -10.04)
+
+[node name="Camera_Up" type="Camera3D" parent="Tractor"]
+transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, 20, -1.39)
+
+[node name="CameraSwitchCamera" type="Camera3D" parent="."]
+
+[node name="Camera_Follow" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.980727, 0.195381, 0, -0.195381, 0.980727, 0, 21.6734, 7.23756)
+top_level = true
+current = true
+script = ExtResource("8_sbtcx")
+min_distance = 7.0
+max_distance = 10.0
+angle_v_adjust = 13.555
+height = 4.455
+node_to_follow = NodePath("../Tractor")
+
+[node name="Panel_3rdPartyCredits" type="Panel" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_65nd2")
+
+[node name="RichTextLabel_3rdPartyCredits" type="RichTextLabel" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = 43.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+bbcode_enabled = true
+text = "[b]Tractor (3D-model):[/b]
+by ahmadbaroud ([url=\"https://creativecommons.org/licenses/by/4.0/\"]CC BY 4.0[/url])
+[url]https://skfb.ly/oS6ZJ[/url]
+These modification were made to the original model:
+[ul]
+The original model was \"disassembled\" to separate objects.
+Tires and rims were separated from the original model and reconstructed in Godot Engine to make them usable in the simulated tractor. Their locations have been changed a bit.
+Front axle was replaced with one modeled in Godot Engine.
+Some parts of the cabin were separated from the rest of the body to make them hideable (mostly to make view from the cabin less obstructed).
+Steering wheel was replaced with another model (this change doesn't actually affect this model, but the replacement steering wheel is shown in the place of the original one).
+[/ul]
+
+[b]Steering wheel (3D-model):[/b]
+by sedayuzlu ([url=\"https://creativecommons.org/licenses/by/4.0/\"]CC BY 4.0[/url])
+[url]https://skfb.ly/oF7Nu[/url]
+
+Also uses:
+[ul]
+[url=\"https://github.com/Dechode/Godot-FFB-SDL\"]godot_ffb_sdl[/url] GDExtension (=plugin) for steering wheel force feedback support.
+Snippets from the [url=\"https://github.com/AgHardware/Boards/tree/main/TeensyModules/AIO%20Micro%20v4/Firmware/Autosteer_gps_teensy_v4\"]AgOpenGPS teensy code[/url]
+And of course [url=\"https://godotengine.org/\"]Godot Engine[/url]
+[/ul]
+
+Parties mentioned above do not have any affiliation with this project other than making their work available to use. Big thanks for sharing!
+
+Otherwise (not counting the 3rd party assets mentioned above) this project is released under GPLv3-license. So you need to follow the individual licenses if using any part of this to your purposes.
+
+Sources and assets can be found from this project's github repo: [url]https://github.com/GNSS-Stylist/AgOpenGPSSimPoC[/url]"
+
+[node name="Button_Close3rdPartyCredits" type="Button" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -185.0
+offset_top = 4.0
+offset_right = -33.0
+offset_bottom = 35.0
+grow_horizontal = 0
+text = "Close credits"
+
+[node name="CheckBox_Hide3rdPartyAssetsOnProgramStart" type="CheckBox" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.005
+anchor_right = 1.0
+anchor_bottom = 0.005
+offset_left = -562.0
+offset_top = 0.76
+offset_right = -192.0
+offset_bottom = 31.76
+text = "Do not show 3rd party assets on next start"
+
+[node name="Label" type="Label" parent="Panel_3rdPartyCredits"]
 layout_mode = 0
-offset_left = 110.0
-offset_top = 156.0
-offset_right = 210.0
-offset_bottom = 179.0
+offset_left = 14.0
+offset_top = 8.0
+offset_right = 184.0
+offset_bottom = 31.0
+text = "3rd party assets used:"
 
-[node name="Ramp" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.790823, -0.605763, 0.0874599, 0.239318, 0.174529, -0.955127, 0.563316, 0.776267, 0.282992, 0, 7.88973, 24.7912)
-material_override = SubResource("StandardMaterial3D_mqdkg")
-mesh = SubResource("BoxMesh_nryma")
+[node name="HSeparator" type="HSeparator" parent="Panel_3rdPartyCredits"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 34.0
+offset_bottom = 38.0
+grow_horizontal = 2
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Ramp"]
+[node name="Window_Settings" type="Window" parent="."]
+title = "Settings"
+initial_position = 2
+size = Vector2i(700, 500)
+visible = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Ramp/StaticBody3D"]
-transform = Transform3D(1, 1.49012e-08, 0, -2.98023e-08, 1, 5.96046e-08, 0, 2.98023e-08, 1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_w5fvs")
+[node name="TabContainer_Settings" parent="Window_Settings" instance=ExtResource("9_4p8ky")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 0.0
+offset_bottom = 0.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[connection signal="value_changed" from="Panel_Controls/HSlider_SteerAngle" to="." method="_on_h_slider_steer_angle_value_changed"]
-[connection signal="value_changed" from="Panel_Controls/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
-[connection signal="pressed" from="Panel_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle" to="." method="_on_h_slider_hid_angle_value_changed"]
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/Button_ResetSteerAngleAndSpeed" to="." method="_on_button_reset_steer_angle_and_speed_pressed"]
+[connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_MaxSpeed/SpinBox_MaxSpeed" to="." method="_on_spin_box_max_speed_value_changed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets/Button_ShowSettings" to="." method="_on_button_show_settings_pressed"]
+[connection signal="pressed" from="Panel_Controls/VBoxContainer_Controls/HBoxContainer_Settings_3rdPartyAssets/Button_Show3rdPartyAssets" to="." method="_on_button_show_3_rd_party_assets_pressed"]
+[connection signal="meta_clicked" from="Panel_3rdPartyCredits/RichTextLabel_3rdPartyCredits" to="." method="_on_rich_text_label_3_rd_party_credits_meta_clicked"]
+[connection signal="pressed" from="Panel_3rdPartyCredits/Button_Close3rdPartyCredits" to="." method="_on_button_close_3_rd_party_credits_pressed"]
+[connection signal="close_requested" from="Window_Settings" to="." method="_on_window_settings_close_requested"]
+
+[editable path="Window_Settings/TabContainer_Settings"]

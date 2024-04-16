@@ -1,0 +1,18 @@
+Model Information:
+* title:	tractor
+* source:	https://sketchfab.com/3d-models/tractor-2614ec07916d4b2da2d096f78420c905
+* author:	ahmadbaroud (https://sketchfab.com/ahmadbaroud60)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "tractor" (https://sketchfab.com/3d-models/tractor-2614ec07916d4b2da2d096f78420c905) by ahmadbaroud (https://sketchfab.com/ahmadbaroud60) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+
+These modification were made to the original model mentioned above:
+- The original model was "disassembled" to separate objects.
+- Tires and rims were separated from the original model and re-constructed in Godot Engine to make them usable in the simulated tractor. Their location have been changed a bit.
+- Front axle was replaced with one modeled in Godot Engine.
+- Some parts of the cabin were separated from the rest of the body to make them hideable (mostly to make view from the cabin less obstructed).
+- Steering wheel was replaced with another model (this change doesn't actually affect this model, but the replacement steering wheel is shown in the place of the original one).

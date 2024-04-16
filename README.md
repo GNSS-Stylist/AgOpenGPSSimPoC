@@ -1,20 +1,27 @@
 # AgOpenGPSSimPoC
+
 Proof of concept simulator ("digital twin"?) made with Godot game engine for AgOpenGPS.
 Video about testing here: https://youtu.be/4QyAIUzLqAU?si=-uQ_FV9inpwAjjgu
 
 Uses Godot game engine (and it's physics engine) to simulate tractor's behavior in a virtual world. Steering commands are received from and latitude/longitude/height/heading/roll/etc are sent to AgOpenGPS (or actually AgIO) using UDP-protocol. From the AgOpenGPS' (AgIO's) perspective this basically emulates All-In-One-board's (V4.1) UDP-communication as implemented in teensy-code. This emulation, however, implements only minimum set of features to get this working somehow (as this is just a PoC after all).
 
-Made with Godot version 4.1.1, which you can download here: https://downloads.tuxfamily.org/godotengine/4.1.1/ This should be multi-platform but I have only tested this in windows 10 for now. Requirements should not be very high, I'd guess any mid-range laptop manufactured during the last 10 years or so should probably be enough to run this. Standard-version ( https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/main ) needs vulkan, but there is a lighther version using OpenGL-renderer (without shadows for now) on another branch: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/OpenGL_renderer .
+Made with Godot version 4.2.1, which you can download here: https://godotengine.org/download/archive/4.2.1-stable/ This should be multi-platform (apart from the force feedback support) but I have only more thoroughly tested this in windows 10 for now. I couldn't get steering wheel force feedback working on Linux (only tested this quite quickly in Mint), but it should be possible.
 
-You can drive around the virtual world using keys and UI-controls in the left upper corner.
+Requirements should not be very high, I'd guess any mid-range laptop manufactured during the last 5 years or so should probably be enough to run this. Standard-version ( https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/main ) needs vulkan, but there is a lighther version using OpenGL-renderer (without shadows for now) on another branch: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/OpenGL_renderer .
 
-Controls:
+You can drive around the virtual world using keys and UI-controls in the left upper corner. Or if you have a joystick or steering wheel, also using those. You may need to remap controls from the Project Settings->Input Map on Godot, though.
+
+Default controls:
+
 - W,S,A,D: control tractor's speed and steering
-- Space: Set tractor's target speed to 0 and steering straight
-- Enter: Engage/disengage automatic steering
+- End: Set tractor's target speed to 0 and steering straight
+- Home: Engage/disengage automatic steering
 - F1: Switch to "First person flyer" camera (use CTRL to activate/deactivate mouse look)
 - F2: Switch to follow camera
 - F3: Switch to tractor driver's view
+- F4: Switch to right-back view.
+- F5: Switch to left-back view.
+- F6: Switch to fixed back view.
 - F12: Full screen toggle
 - CTRL: Activate/deactivate mouse look for "First person flyer" camera. This needs to be deactivated before you can use your mouse for other purposes again.
 - U,H,J,K & Y,I (& O,L for roll if using 6 dof-mode): Fly around with the "First person flyer" camera
@@ -22,11 +29,45 @@ Controls:
 - Mouse wheel & plus & minus keys: Change flying speed of "First person flyer" camera
 - B: Create a new 300 kg ball (physics object)
 - Mouse buttons (when flying with "First person flyer" camera): Activate physics "manipulators"
+- T: Teleport tractor to the front of first person flyer coordinates.
 
 Notes:
+
 - Preferred way to use this is to set your ethernet's IP-address to 192.168.5.126 (when using the default settings on AgOpenGPS/AgIO) and connect a tablet running AgOpenGps(/AgIO) to your computer using an ethernet-cable (or using a router or something). This way you can use AgOpenGPS on your tablet as you would in a real tractor. However due to the way AgOpenGPS/AgIO uses UDP broadcast messages it is also possible to run this on the same computer as the AgOpenGPS/AgIO. For this to work (with the default settings in AgOpenGPS and the simulator) you need to set your ethernet IP to 192.168.5.10. The laptop I'm using seems to also require that the ethernet cable is connected to something (can be even another laptop, seems to just need some kind of lower level connection to wake up). Requirements on other systems may differ. Might also work with other kinds of adapters (wifi or virtual etc), with some twiddling on other address spaces as well.
 - You may need to allow firewall to pass Godot Engine's traffic as this uses UDP-protocol for communication.
-- Simulated area is located in the middle of South Atlantic ocean (near zero latitude/longitude). This was done to make calculations far easier (this being just a PoC...).
+- Simulated area is located in the middle of South Atlantic ocean (near zero latitude/longitude). This was done to make calculations much easier (this being just a PoC...).
 - Based on dual antenna setup (although only one antenna can be seen, because teensy-code calculates heading/roll internally and therefore there's no need for the location of the second antenna here). You need to configure AgOpenGPS/AgIO accordingly.
-- Tractor model is loosely based on Valmet 405 (as seen on the video https://youtu.be/IhYAJ6jgmnk?feature=shared). This tractor has a wheelbase 2.26 m, antenna location is 28 cm back, 258 cm up and 97 cm left (I remember there being some strange discrepancy about the sideway coordinates when testing the real setup and now looking at the simulated tractor and setting in AgOpenGPS they do not seem to match... Not investigating this further now, though. If trying this, just use -97 to sideways shift-setting).
-- Do not use this as a base for anything serious. This was hacked together in few days, is super ugly and contains several dirty hacks to get things working on a rudimentary level.
+- Tractor model was downloaded from Sketchfab and made by ahmadbaroud ( https://skfb.ly/oS6ZJ ). This tractor has a wheelbase 2.64 m, antenna location is 0 cm, 290 cm up and 50 cm right (I remember there being some strange discrepancy in the sideway coordinates when testing the real setup and now looking at the simulated tractor and setting in AgOpenGPS they do not seem to match... Not investigating this further now, though. If trying this, just use -50 to sideways shift-setting).
+
+Uses:
+
+- Tractor (3D-model) by ahmadbaroud:
+  
+  https://skfb.ly/oS6ZJ
+  license: CC BY 4.0 ( https://creativecommons.org/licenses/by/4.0/ )
+  These modification were made to the original model:
+  
+  - The original model was "disassembled" to separate objects.
+  
+  - Tires and rims were separated from the original model and reconstructed in Godot Engine to make them usable in the simulated tractor. Their locations have been changed a bit.
+  
+  - Front axle was replaced with one modeled in Godot Engine.
+  
+  - Some parts of the cabin were separated from the rest of the body to make them hideable (mostly to make view from the cabin less obstructed).
+  
+  - Steering wheel was replaced with another model (this change doesn't actually affect this model, but the replacement steering wheel is shown in the place of the original one).
+
+- Steering wheel (3D-model) by sedayuzlu:
+  
+  https://skfb.ly/oF7Nu
+  license: CC BY 4.0 ( https://creativecommons.org/licenses/by/4.0/ )
+
+Also uses:
+
+- godot_ffb_sdl GDExtension (=plugin) ( https://github.com/Dechode/Godot-FFB-SDL ) for steering wheel force feedback support.
+- Snippets from the AgOpenGPS teensy code ( https://github.com/AgHardware/Boards/tree/main/TeensyModules/AIO%20Micro%20v4/Firmware/Autosteer_gps_teensy_v4 )
+- And of course Godot Engine ( https://godotengine.org/ )
+
+Otherwise (not counting the 3rd party assets mentioned above) this project is released under GPLv3-license. So you need to follow the individual licenses if using any part of this to your purposes.
+
+Sources and assets can be found from this project's github repo: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC
