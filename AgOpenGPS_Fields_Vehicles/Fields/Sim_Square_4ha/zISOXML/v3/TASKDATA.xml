@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ISO11783_TaskData DataTransferOrigin="1" ManagementSoftwareManufacturer="AgOpenGPS" ManagementSoftwareVersion="1.4.0" VersionMajor="3" VersionMinor="3">
+  <PFD A="PFD-1" C="Sim_Square_4ha" D="39734">
+    <PLN A="1">
+      <LSG A="1">
+        <PNT A="2" C="0.0107787733056359" D="0.00540516746043538" />
+        <PNT A="2" C="0.0107787917197204" D="0.00718737176898185" />
+        <PNT A="2" C="0.0107928302486413" D="0.00718737111878575" />
+        <PNT A="2" C="0.0125757234215995" D="0.00718728854387993" />
+        <PNT A="2" C="0.012575723241483" D="0.00717325213116913" />
+        <PNT A="2" C="0.012575700366687" D="0.00539062771689718" />
+        <PNT A="2" C="0.0125616618728898" D="0.00539063167501922" />
+        <PNT A="2" C="0.0107787731606431" D="0.00539113435564368" />
+      </LSG>
+    </PLN>
+  </PFD>
+</ISO11783_TaskData>

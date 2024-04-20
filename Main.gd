@@ -32,6 +32,9 @@ var maxDrivingSpeed:float = 24
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	# Not sure about creation order so load settings here to be safe
+	$Window_Settings/TabContainer_Settings.loadConfig()
+	
 	terrainHeightmapNoiseTexture.noise.seed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
 	terrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
 	updateTerrain()
@@ -48,10 +51,17 @@ func _ready():
 	udpServer.listen(udpServerPort)
 
 func _exit_tree():
+	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
+	$Window_Settings/TabContainer_Settings.saveConfig();
 	if (ffbInitSuccessful):
 		destroyForceFeedbackEffect()
 
-var tractorTeleportRequest:bool = true
+# Not sure what's going on here... Looks like the raycast to find ground level
+# does not work immediately after generating new terrain
+# (even when awaiting NoiseTexture to be updated).
+# So now just counting down some physics frames before teleporting
+const tractorTeleportRequestCounterStartVal:int = 5
+var tractorTeleportRequestCounter:int = 5
 
 func updateTerrain():
 	await terrainHeightmapNoiseTexture.changed
@@ -90,7 +100,7 @@ func updateTerrain():
 	terrainMaterial.set_shader_parameter("heightMultiplier", terrainHeightMultiplier)
 	terrainMaterial.set_shader_parameter("edgeRise", terrainEdgeRise)
 
-	tractorTeleportRequest = true
+	tractorTeleportRequestCounter = tractorTeleportRequestCounterStartVal
 # The world is not ready for teleporting tractors at this stage?
 # (So we need to continue using fossil fuels to move them around. :( )
 #	teleportTractor($Tractor.global_transform.origin)
@@ -250,7 +260,7 @@ func _on_h_slider_target_speed_value_changed(value):
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_TargetSpeed_Value.text = "%1.1f" % value
 
 func _on_button_reset_steer_angle_and_speed_pressed():
-	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngleAngle.value = 0
+	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle.value = 0
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed.value = 0
 	joystickSpeedSetpoint = 0
 
@@ -261,9 +271,12 @@ func _physics_process(delta):
 	var newTerrainRandomSeed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
 	var newTerrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
 	
-	if (tractorTeleportRequest):
+	if (tractorTeleportRequestCounter > 0):
+		tractorTeleportRequestCounter -= 1
+	
+	if (tractorTeleportRequestCounter == 0):
 		teleportTractor($Tractor.global_transform.origin)
-		tractorTeleportRequest = false
+		tractorTeleportRequestCounter = -1
 	
 	if ((newTerrainRandomSeed != terrainHeightmapNoiseTexture.noise.seed) ||
 			(newTerrainHeightMultiplier != terrainHeightMultiplier)):
@@ -372,7 +385,7 @@ func _physics_process(delta):
 #		print(getNMEAChecksum(testNMEA))
 
 	if (timeAfterValidSteerAngleSetpoint > 1):
-		$Panel_Controls/CheckBox_AutomaticSteering.button_pressed = false
+		$Panel_Controls/VBoxContainer_Controls/CheckBox_AutomaticSteering.button_pressed = false
 		
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_RealSpeed.value = filteredSpeed
 	$Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/Label_RealSpeed_Value.text = "%1.2f" % filteredSpeed
@@ -703,7 +716,6 @@ func _on_rich_text_label_3_rd_party_credits_meta_clicked(meta):
 
 func _on_button_close_3_rd_party_credits_pressed():
 	$Panel_3rdPartyCredits.visible = false
-	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 
 func _on_button_show_3_rd_party_assets_pressed():
 	$Panel_3rdPartyCredits.visible = true
@@ -718,11 +730,21 @@ func teleportTractor(destCoords:Vector3):
 	params.collision_mask = 2	# Collide only to terrain
 	var result = space_state.intersect_ray(params)
 	var teleportDestCoords = destCoords
+	var teleportDestNormal:Vector3 = Vector3.UP
 	if (!result.is_empty()):
 		teleportDestCoords = result.position + Vector3(0, 1, 0)
+		teleportDestNormal = result.normal
 	var tractorNode:VehicleBody3D = $Tractor
+	
+	# Try to orient tractor to the destination's surface normal
+	var tractorForwardVec:Vector3 = -tractorNode.global_transform.basis.z
+	var newX:Vector3 = teleportDestNormal.cross(tractorForwardVec).normalized()
+	var newZ:Vector3 = teleportDestNormal.cross(newX).normalized()
+
+	var newBasic:Basis = Basis(-newX, teleportDestNormal, newZ)
+	
 	tractorNode.global_transform.origin = teleportDestCoords
-	tractorNode.global_transform.basis = Basis.looking_at(Vector3(-sin(deg_to_rad($Tractor.heading)), 0, cos(deg_to_rad($Tractor.heading))), Vector3.UP)
+	tractorNode.global_transform.basis = newBasic
 	tractorNode.linear_velocity = Vector3(tractorNode.linear_velocity.x, 0, tractorNode.linear_velocity.z)
 
 func _on_window_settings_close_requested():

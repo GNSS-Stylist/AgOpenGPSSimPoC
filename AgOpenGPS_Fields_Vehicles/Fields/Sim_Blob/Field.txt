@@ -1,0 +1,9 @@
+2024-April-14 10:53:03 PM
+$FieldDir
+FieldNew
+$Offsets
+0,0
+Convergence
+0
+StartFix
+0.011586115,0.0129724116666667

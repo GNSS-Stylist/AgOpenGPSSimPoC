@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ISO11783_TaskData DataTransferOrigin="1" ManagementSoftwareManufacturer="AgOpenGPS" ManagementSoftwareVersion="1.4.0" VersionMajor="4" VersionMinor="2">
+  <PFD A="PFD-1" C="Sim_Suqare_Rotated_4ha" D="39736">
+    <PLN A="1">
+      <LSG A="1">
+        <PNT A="10" C="0.0128048368286402" D="0.0090906985077935" />
+        <PNT A="10" C="0.0119011000730175" D="0.00755399826107427" />
+        <PNT A="10" C="0.0118890058667252" D="0.00756112942300835" />
+        <PNT A="10" C="0.0103530416675909" D="0.00846678698469602" />
+        <PNT A="10" C="0.0103601687072533" D="0.00847888460892415" />
+        <PNT A="10" C="0.0112653027443813" D="0.0100152828908654" />
+        <PNT A="10" C="0.0112773859484571" D="0.010008154106665" />
+        <PNT A="10" C="0.012811952866086" D="0.009102798509781" />
+      </LSG>
+    </PLN>
+  </PFD>
+</ISO11783_TaskData>

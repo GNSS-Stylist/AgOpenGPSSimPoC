@@ -1,0 +1,10 @@
+2024-April-14 10:37:39 PM
+$FieldDir
+Elevation
+$Offsets
+0,0
+Convergence
+0
+StartFix
+0.00890041,0.005835685
+Latitude,Longitude,Elevation,Quality,Easting,Northing,Heading,Roll
