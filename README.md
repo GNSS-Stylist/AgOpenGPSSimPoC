@@ -1,7 +1,10 @@
 # AgOpenGPSSimPoC
 
-Proof of concept simulator ("digital twin"?) made with Godot game engine for AgOpenGPS.
-Video about testing here: https://youtu.be/4QyAIUzLqAU?si=-uQ_FV9inpwAjjgu
+Proof of concept simulator ("digital twin"?) made with Godot game engine for AgOpenGPS.  
+Video about testing here:  
+https://youtu.be/4QyAIUzLqAU  
+Video about testing a new version with a lot of improvements and force feedback steering wheel support:  
+https://youtu.be/OvIh3iD0RC8
 
 Uses Godot game engine (and it's physics engine) to simulate tractor's behavior in a virtual world. Steering commands are received from and latitude/longitude/height/heading/roll/etc are sent to AgOpenGPS (or actually AgIO) using UDP-protocol. From the AgOpenGPS' (AgIO's) perspective this basically emulates All-In-One-board's (V4.1) UDP-communication as implemented in teensy-code. This emulation, however, implements only minimum set of features to get this working somehow (as this is just a PoC after all).
 
