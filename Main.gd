@@ -621,7 +621,12 @@ func handleForceFeedback(active:bool):
 						steerSetting.highPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value
 						steerSetting.minPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value
 					1:	# Received
-						steerSetting = steerSettings_Received
+						# This doesn't work when no settings received in this "session"
+						# steerSetting = steerSettings_Received
+						# -> Replaced with this ugly read from labels (works, though)
+						steerSetting.kp = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_PGain_Received.text.to_int()
+						steerSetting.highPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MaximumLimit_Received.text.to_int()
+						steerSetting.minPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MinimumToMove_Received.text.to_int()
 				
 				var error = steeringWheelPosition * 45.0 - steerAngleSetpoint
 				forceFeedbackForce = calcSteeringPID(error, steerSetting)
