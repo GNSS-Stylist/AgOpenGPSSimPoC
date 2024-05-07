@@ -48,6 +48,10 @@ func loadConfig():
 	$Terrain/GridContainer/SpinBox_RandomSeed.value = config.get_value("Terrain", "RandomSeed", 3)
 	$Terrain/GridContainer/SpinBox_HeightMultiplier.value = config.get_value("Terrain", "HeightMultiplier", 50)
 
+	$UDP/GridContainer/SpinBox_IP_1.value = config.get_value("UDP", "Subnet_1", 192)
+	$UDP/GridContainer/SpinBox_IP_2.value = config.get_value("UDP", "Subnet_2", 168)
+	$UDP/GridContainer/SpinBox_IP_3.value = config.get_value("UDP", "Subnet_3", 5)
+
 	show3rdPartyCreditsOnStart = config.get_value("Visibility", "Show3rdPartyCreditsOnStart", true)
 	
 func saveConfig():
@@ -85,4 +89,18 @@ func saveConfig():
 	
 	config.set_value("Visibility", "Show3rdPartyCreditsOnStart", show3rdPartyCreditsOnStart)
 
+	config.set_value("UDP", "Subnet_1", $UDP/GridContainer/SpinBox_IP_1.value)
+	config.set_value("UDP", "Subnet_2", $UDP/GridContainer/SpinBox_IP_2.value)
+	config.set_value("UDP", "Subnet_3", $UDP/GridContainer/SpinBox_IP_3.value)
+
 	config.save(configFileName)
+
+
+func _on_button_update_udp_pressed():
+	var subnet:Array[int] = [
+		int($UDP/GridContainer/SpinBox_IP_1.value),
+		int($UDP/GridContainer/SpinBox_IP_2.value),
+		int($UDP/GridContainer/SpinBox_IP_3.value)
+		] 
+	
+	get_parent().get_parent().updateUDPSubnet(subnet)
