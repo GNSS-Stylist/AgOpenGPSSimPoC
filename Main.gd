@@ -10,11 +10,12 @@ const terrainEdgeRise:float = 10
 var udpServer:UDPServer
 var clientPeer:PacketPeerUDP
 var peers = []
-
 const udpServerPort:int = 8888
-
-const udpDestAddress:String = "192.168.5.10"
 const udpDestPort:int = 9999
+var udpDestAddress:String = "?"
+var udpServerAddress:String = "?"
+
+var subnet:Array[int] = [0, 0, 0]
 
 class SteerSettings:
 	var kp:int = 0
@@ -41,14 +42,12 @@ func _ready():
 	
 	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = !($Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart)
 	$Panel_3rdPartyCredits.visible = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
-
-	clientPeer = PacketPeerUDP.new()
-	clientPeer.set_broadcast_enabled(true)
-	clientPeer.set_dest_address(udpDestAddress, udpDestPort)
-
-	udpServer = UDPServer.new()
 	
-	udpServer.listen(udpServerPort)
+	updateUDPSubnet( [
+		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_1.value,
+		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_2.value,
+		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_3.value
+		] )
 
 func _exit_tree():
 	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
@@ -367,11 +366,12 @@ func _physics_process(delta):
 		var checksum = getNMEAChecksum(paogi)
 		paogi += checksum
 
-		if ($Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_DebugMessage_Send. is_pressed()):
-			print("Uptime: %1.3f s, IP: %s, port: %d: sent msg: %s" % [float(Time.get_ticks_msec() / 1000.0), udpDestAddress, udpDestPort, paogi])
+		if (clientPeer):
+			if ($Window_Settings/TabContainer_Settings/General/VBoxContainer_General/CheckBox_DebugMessage_Send. is_pressed()):
+				print("Uptime: %1.3f s, IP: %s, port: %d: sent msg: %s" % [float(Time.get_ticks_msec() / 1000.0), udpDestAddress, udpDestPort, paogi])
 
-		paogi += "\r\n"
-		clientPeer.put_packet(paogi.to_ascii_buffer())
+			paogi += "\r\n"
+			clientPeer.put_packet(paogi.to_ascii_buffer())
 
 #		var dummyPacket:String = "$PAOGI,133048.80,6250.0839939,N,02504.6965874,E,4,12,0.70,206.646,0.8,0.019,207.24,-3.98,,*"
 #		var checksum = getNMEAChecksum(dummyPacket)
@@ -398,6 +398,9 @@ func _physics_process(delta):
 		teleportTractor($FirstPersonFlyer/ManipulatorMeshes/ManipulatorTip.global_position)
 
 func handleUDPComms():
+	if ((!udpServer) || (!clientPeer)):
+		return
+	
 	# Note: PAOGI is handled separately (in _physics_process) to keep sending of it more precise
 	udpServer.poll()
 
@@ -505,9 +508,9 @@ func handleUDPComms():
 				packetDescription = "Whoami"
 				
 				if (packet[4] == 3 && packet[5] == 202 && packet[6] == 202):
-					var Eth_myip:PackedByteArray = [192, 168, 5, 126]
-					var rem_ip:PackedByteArray = [ 192, 168, 5, 10]
-					var scanReply:PackedByteArray = [ 128, 129, Eth_myip[3], 203, 7,
+					var Eth_myip:PackedByteArray = [subnet[0], subnet[1], subnet[2], 126]
+					var rem_ip:PackedByteArray = [subnet[0], subnet[1], subnet[2], 10]
+					var scanReply:PackedByteArray = [128, 129, Eth_myip[3], 203, 7,
 						Eth_myip[0], Eth_myip[1], Eth_myip[2], Eth_myip[3], 
 						rem_ip[0],rem_ip[1],rem_ip[2], 23 ]
 
@@ -618,7 +621,12 @@ func handleForceFeedback(active:bool):
 						steerSetting.highPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MaximumLimit_Local.value
 						steerSetting.minPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/SpinBox_MinimumToMove_Local.value
 					1:	# Received
-						steerSetting = steerSettings_Received
+						# This doesn't work when no settings received in this "session"
+						# steerSetting = steerSettings_Received
+						# -> Replaced with this ugly read from labels (works, though)
+						steerSetting.kp = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_PGain_Received.text.to_int()
+						steerSetting.highPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MaximumLimit_Received.text.to_int()
+						steerSetting.minPWM = $Window_Settings/TabContainer_Settings/SteerSettings/VBoxContainer/GridContainer_SteerSettings/Label_MinimumToMove_Received.text.to_int()
 				
 				var error = steeringWheelPosition * 45.0 - steerAngleSetpoint
 				forceFeedbackForce = calcSteeringPID(error, steerSetting)
@@ -754,3 +762,24 @@ func _on_button_show_settings_pressed():
 	$Window_Settings.visible = true
 	$Window_Settings.grab_focus()
 
+func updateUDPSubnet(newSubnet:Array[int]):
+	subnet = newSubnet
+	var subnetString:String = "%d.%d.%d" % [subnet[0], subnet[1], subnet[2] ]
+
+	udpDestAddress = subnetString + ".10"
+	udpServerAddress = subnetString + ".126"
+
+	if (clientPeer):
+		clientPeer.close()
+
+	clientPeer = PacketPeerUDP.new()
+	clientPeer.set_broadcast_enabled(true)
+	clientPeer.set_dest_address(udpDestAddress, udpDestPort)
+
+	if (udpServer):
+		udpServer.stop()
+
+	udpServer = UDPServer.new()
+	udpServer.listen(udpServerPort, udpServerAddress)
+	
+	peers.clear()
