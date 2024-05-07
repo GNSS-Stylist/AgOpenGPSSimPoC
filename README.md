@@ -10,7 +10,7 @@ Uses Godot game engine (and it's physics engine) to simulate tractor's behavior 
 
 Made with Godot version 4.2.1, which you can download here: https://godotengine.org/download/archive/4.2.1-stable/ This should be multi-platform (apart from the force feedback support) but I have only more thoroughly tested this in windows 10 for now. I couldn't get steering wheel force feedback working on Linux (only tested this quite quickly in Mint), but it should be possible.
 
-Requirements should not be very high, I'd guess any mid-range laptop manufactured during the last 5 years or so should probably be enough to run this. Standard-version ( https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/main ) needs vulkan, but there is a lighther version using OpenGL-renderer (without shadows for now) on another branch: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/OpenGL_renderer .
+Requirements should not be very high, I'd guess any mid-range laptop manufactured during the last 5 years or so should probably be enough to run this. Standard-version ( https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/main ) needs vulkan, but there is a lighther version using OpenGL-renderer on another branch: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/OpenGL_renderer .
 
 You can drive around the virtual world using keys and UI-controls in the left upper corner. Or if you have a joystick or steering wheel, also using those. You may need to remap controls from the Project Settings->Input Map on Godot, though.
 
