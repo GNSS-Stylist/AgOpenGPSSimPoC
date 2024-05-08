@@ -5,9 +5,11 @@
 [node name="TabContainer_Settings" type="TabContainer"]
 offset_right = 532.0
 offset_bottom = 407.0
+current_tab = 5
 script = ExtResource("1_gl0sx")
 
 [node name="General" type="Panel" parent="."]
+visible = false
 layout_mode = 2
 
 [node name="VBoxContainer_General" type="VBoxContainer" parent="General"]
@@ -240,44 +242,56 @@ step = 0.1
 value = 50.0
 
 [node name="UDP" type="Panel" parent="."]
-visible = false
 layout_mode = 2
 
-[node name="GridContainer" type="GridContainer" parent="UDP"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="VBoxContainer" type="VBoxContainer" parent="UDP"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="UDP/VBoxContainer"]
+layout_mode = 2
 columns = 6
 
-[node name="Label_Subnet" type="Label" parent="UDP/GridContainer"]
+[node name="Label_Subnet" type="Label" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 text = "Subnet:"
 
-[node name="SpinBox_IP_1" type="SpinBox" parent="UDP/GridContainer"]
+[node name="SpinBox_IP_1" type="SpinBox" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 max_value = 255.0
 value = 192.0
 
-[node name="Label_Dot1" type="Label" parent="UDP/GridContainer"]
+[node name="Label_Dot1" type="Label" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 text = "."
 
-[node name="SpinBox_IP_2" type="SpinBox" parent="UDP/GridContainer"]
+[node name="SpinBox_IP_2" type="SpinBox" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 max_value = 255.0
 value = 168.0
 
-[node name="Label_Dot2" type="Label" parent="UDP/GridContainer"]
+[node name="Label_Dot2" type="Label" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 text = "."
 
-[node name="SpinBox_IP_3" type="SpinBox" parent="UDP/GridContainer"]
+[node name="SpinBox_IP_3" type="SpinBox" parent="UDP/VBoxContainer/GridContainer"]
 layout_mode = 2
 max_value = 255.0
 value = 5.0
 
-[node name="Button_Update_UDP" type="Button" parent="UDP/GridContainer"]
+[node name="CheckBox_UseIP126ForServer" type="CheckBox" parent="UDP/VBoxContainer"]
+layout_mode = 2
+text = "Use IP-address Subnet.126 for server
+(uncheck if running AgOpenGPS on the same IP)"
+text_overrun_behavior = 3
+clip_text = true
+
+[node name="Button_Update_UDP" type="Button" parent="UDP/VBoxContainer"]
 layout_mode = 2
 text = "Update"
 
-[connection signal="pressed" from="UDP/GridContainer/Button_Update_UDP" to="." method="_on_button_update_udp_pressed"]
+[connection signal="pressed" from="UDP/VBoxContainer/Button_Update_UDP" to="." method="_on_button_update_udp_pressed"]

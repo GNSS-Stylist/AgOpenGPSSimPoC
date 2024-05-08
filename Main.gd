@@ -13,7 +13,6 @@ var peers = []
 const udpServerPort:int = 8888
 const udpDestPort:int = 9999
 var udpDestAddress:String = "?"
-var udpServerAddress:String = "?"
 
 var subnet:Array[int] = [0, 0, 0]
 
@@ -44,10 +43,10 @@ func _ready():
 	$Panel_3rdPartyCredits.visible = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
 	
 	updateUDPSubnet( [
-		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_1.value,
-		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_2.value,
-		$Window_Settings/TabContainer_Settings/UDP/GridContainer/SpinBox_IP_3.value
-		] )
+		$Window_Settings/TabContainer_Settings/UDP/VBoxContainer/GridContainer/SpinBox_IP_1.value,
+		$Window_Settings/TabContainer_Settings/UDP/VBoxContainer/GridContainer/SpinBox_IP_2.value,
+		$Window_Settings/TabContainer_Settings/UDP/VBoxContainer/GridContainer/SpinBox_IP_3.value
+		], $Window_Settings/TabContainer_Settings/UDP/VBoxContainer/CheckBox_UseIP126ForServer.button_pressed )
 
 func _exit_tree():
 	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
@@ -762,12 +761,11 @@ func _on_button_show_settings_pressed():
 	$Window_Settings.visible = true
 	$Window_Settings.grab_focus()
 
-func updateUDPSubnet(newSubnet:Array[int]):
+func updateUDPSubnet(newSubnet:Array[int], useIP126ForServer:bool):
 	subnet = newSubnet
 	var subnetString:String = "%d.%d.%d" % [subnet[0], subnet[1], subnet[2] ]
 
 	udpDestAddress = subnetString + ".10"
-	udpServerAddress = subnetString + ".126"
 
 	if (clientPeer):
 		clientPeer.close()
@@ -780,6 +778,13 @@ func updateUDPSubnet(newSubnet:Array[int]):
 		udpServer.stop()
 
 	udpServer = UDPServer.new()
-	udpServer.listen(udpServerPort, udpServerAddress)
+	if (useIP126ForServer):
+		var udpServerAddress:String = subnetString + ".126"
+		udpServer.listen(udpServerPort, udpServerAddress)
+	else:
+		# Server not in specific address (serve in all addresses)
+		# (This is needed when the address Subnet.126 is not actually present
+		# on the machine).
+		udpServer.listen(udpServerPort)
 	
 	peers.clear()
