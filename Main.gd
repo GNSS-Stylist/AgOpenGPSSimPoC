@@ -4,8 +4,12 @@ extends Node3D
 @onready var terrainCollisionShape = $Terrain/StaticBody3D/CollisionShape3D
 
 @export var terrainHeightmapNoiseTexture:NoiseTexture2D
-@export var terrainHeightMultiplier:float = 50
-const terrainEdgeRise:float = 10
+@export var terrainHeightMultiplier_Noise:float = 50
+var terrainSlope_North:float = 0
+var terrainSlope_East:float = 0
+var terrainCenterHillHeight:float = 0
+var terrainCenterHillPeriod:float = 1000
+const terrainEdgeRise:float = 20
 
 var udpServer:UDPServer
 var clientPeer:PacketPeerUDP
@@ -36,7 +40,11 @@ func _ready():
 	$Window_Settings/TabContainer_Settings.loadConfig()
 	
 	terrainHeightmapNoiseTexture.noise.seed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
-	terrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
+	terrainHeightMultiplier_Noise = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier_Noise.value
+	terrainSlope_North = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_Slope_North.value
+	terrainSlope_East = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_Slope_East.value
+	terrainCenterHillHeight = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_CenterHillHeight.value
+	terrainCenterHillPeriod = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_CenterHillPeriod.value
 	updateTerrain()
 	
 	$Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed = !($Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart)
@@ -47,6 +55,12 @@ func _ready():
 		$Window_Settings/TabContainer_Settings/UDP/VBoxContainer/GridContainer/SpinBox_IP_2.value,
 		$Window_Settings/TabContainer_Settings/UDP/VBoxContainer/GridContainer/SpinBox_IP_3.value
 		], $Window_Settings/TabContainer_Settings/UDP/VBoxContainer/CheckBox_UseIP126ForServer.button_pressed )
+
+	# This is a workaround for bug
+	# https://github.com/godotengine/godot/issues/86369
+	# (Can't set custom aabb in inspector)
+	# causing terrain to sometimes disappear (due to shader displacing the vertices)
+	terrain.custom_aabb = AABB(Vector3(-5000, -5000, -5000), Vector3(10000, 10000, 10000))
 
 func _exit_tree():
 	$Window_Settings/TabContainer_Settings.show3rdPartyCreditsOnStart = !($Panel_3rdPartyCredits/CheckBox_Hide3rdPartyAssetsOnProgramStart.button_pressed)
@@ -68,7 +82,7 @@ func updateTerrain():
 	# Resize could be used to make CollisionShape lighter?
 	var data = heightMapImage.get_data().to_float32_array()
 	for i in range(0, data.size()):
-		data[i] *= terrainHeightMultiplier
+		data[i] *= terrainHeightMultiplier_Noise
 #		data[i] = randf_range(-1000, 1000)
 
 	var shape:HeightMapShape3D = HeightMapShape3D.new()
@@ -83,19 +97,52 @@ func updateTerrain():
 		# West / east walls
 		data[i * heightMapImage.get_width()] += terrainEdgeRise
 		data[i * heightMapImage.get_width() + heightMapImage.get_width() - 1] += terrainEdgeRise
-		
-#	for i in range(0, heightMapImage.get_height(), 2):
-#		for ii in range (0, heightMapImage.get_width()):
-#			data[i * heightMapImage.get_width() + ii] += edgeRise
+	
+	var slope_N:float = tan(deg_to_rad(-terrainSlope_North))
+	var slope_E:float = tan(deg_to_rad(-terrainSlope_East))
+	var offset:float = 0
+
+	# Stay positive! (or at least keep height so)
+	if (slope_N < 0):
+		offset -= 1000.0 * slope_N
+	if (slope_E < 0):
+		offset -= 1000.0 * slope_E
+	
+	for n in range (heightMapImage.get_height()):
+		for e in range (heightMapImage.get_width()):
+			var relN = float(n) / heightMapImage.get_height()
+			var relE = float(e) / heightMapImage.get_height()
+			data[n * heightMapImage.get_width() + e] +=  relN * slope_N * 1000.0 + relE * slope_E * 1000.0 + offset
+
+	var centerN:float = heightMapImage.get_height() / 2.0
+	var centerE:float = heightMapImage.get_width() / 2.0
+	var multiplierN:float = 1000 / heightMapImage.get_height()
+	var multiplierE:float = 1000 / heightMapImage.get_width()
+
+	for n in range (heightMapImage.get_height()):
+		for e in range (heightMapImage.get_width()):
+			var distFromCenter = sqrt(pow((n - centerN) * multiplierN, 2) + pow((e - centerE) * multiplierE, 2))
+			var x = (distFromCenter / terrainCenterHillPeriod) * 2 * PI
+			data[n * heightMapImage.get_width() + e] += (sin(x) / x)  * terrainCenterHillHeight
 	
 	shape.map_data = data
 	terrainCollisionShape.shape = shape
-	var scaleVal:float = 1000.0/float(heightMapImage.get_width())
+	var scaleVal:float = 1000.0/float(heightMapImage.get_width() - 1.0)
 	terrainCollisionShape.scale = Vector3(scaleVal, 1, scaleVal)
 	
 	var terrainMaterial:ShaderMaterial = terrain.material_override
-	terrainMaterial.set_shader_parameter("heightmap", terrainHeightmapNoiseTexture)
-	terrainMaterial.set_shader_parameter("heightMultiplier", terrainHeightMultiplier)
+	
+	var newHeightmapImage:Image = Image.create_from_data(heightMapImage.get_width(), heightMapImage.get_height(), false, Image.FORMAT_RF, data.to_byte_array())
+	var newHeightmapTexture:ImageTexture = ImageTexture.create_from_image(newHeightmapImage)
+	
+#	newHeightmapTexture.
+	
+#	terrainMaterial.set_shader_parameter("heightmap", terrainHeightmapNoiseTexture)
+	terrainMaterial.set_shader_parameter("heightmap", newHeightmapTexture)
+
+#	terrainMaterial.set_shader_parameter("heightMultiplier", terrainHeightMultiplier_Noise)
+	terrainMaterial.set_shader_parameter("heightMultiplier", 1)
+
 	terrainMaterial.set_shader_parameter("edgeRise", terrainEdgeRise)
 
 	tractorTeleportRequestCounter = tractorTeleportRequestCounterStartVal
@@ -267,7 +314,11 @@ var timeAfterValidSteerAngleSetpoint:float = 0
 
 func _physics_process(delta):
 	var newTerrainRandomSeed = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_RandomSeed.value
-	var newTerrainHeightMultiplier = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier.value
+	var newTerrainHeightMultiplier_Noise = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_HeightMultiplier_Noise.value
+	var newTerrainSlope_North = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_Slope_North.value
+	var newTerrainSlope_East = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_Slope_East.value
+	var newTerrainCenterHillHeight = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_CenterHillHeight.value
+	var newTerrainCenterHillPeriod = $Window_Settings/TabContainer_Settings/Terrain/GridContainer/SpinBox_CenterHillPeriod.value
 	
 	if (tractorTeleportRequestCounter > 0):
 		tractorTeleportRequestCounter -= 1
@@ -277,10 +328,18 @@ func _physics_process(delta):
 		tractorTeleportRequestCounter = -1
 	
 	if ((newTerrainRandomSeed != terrainHeightmapNoiseTexture.noise.seed) ||
-			(newTerrainHeightMultiplier != terrainHeightMultiplier)):
+			(newTerrainHeightMultiplier_Noise != terrainHeightMultiplier_Noise) ||
+			(newTerrainSlope_North != terrainSlope_North) ||
+			(newTerrainSlope_East != terrainSlope_East) ||
+			(newTerrainCenterHillHeight != terrainCenterHillHeight) ||
+			(newTerrainCenterHillPeriod != terrainCenterHillPeriod)):
 
 		terrainHeightmapNoiseTexture.noise.seed = newTerrainRandomSeed
-		terrainHeightMultiplier = newTerrainHeightMultiplier
+		terrainHeightMultiplier_Noise = newTerrainHeightMultiplier_Noise
+		terrainSlope_North = newTerrainSlope_North
+		terrainSlope_East = newTerrainSlope_East
+		terrainCenterHillHeight = newTerrainCenterHillHeight
+		terrainCenterHillPeriod = newTerrainCenterHillPeriod
 		
 		updateTerrain()
 		
