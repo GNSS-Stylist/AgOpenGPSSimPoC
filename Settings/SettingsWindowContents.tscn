@@ -5,11 +5,9 @@
 [node name="TabContainer_Settings" type="TabContainer"]
 offset_right = 532.0
 offset_bottom = 407.0
-current_tab = 5
 script = ExtResource("1_gl0sx")
 
 [node name="General" type="Panel" parent="."]
-visible = false
 layout_mode = 2
 
 [node name="VBoxContainer_General" type="VBoxContainer" parent="General"]
@@ -230,18 +228,62 @@ max_value = 2e+09
 value = 3.0
 rounded = true
 
-[node name="Label_HeightMultiplier" type="Label" parent="Terrain/GridContainer"]
+[node name="Label_HeightMultiplier_Noise" type="Label" parent="Terrain/GridContainer"]
 layout_mode = 2
-text = "Height multiplier:
+text = "Height multiplier (noise):
 "
 
-[node name="SpinBox_HeightMultiplier" type="SpinBox" parent="Terrain/GridContainer"]
+[node name="SpinBox_HeightMultiplier_Noise" type="SpinBox" parent="Terrain/GridContainer"]
 layout_mode = 2
 max_value = 200.0
 step = 0.1
 value = 50.0
 
+[node name="Label_Slope_North" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Slope north:"
+
+[node name="SpinBox_Slope_North" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+min_value = -45.0
+max_value = 45.0
+step = 0.1
+suffix = "deg"
+
+[node name="Label_Slope_East" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Slope east:"
+
+[node name="SpinBox_Slope_East" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+min_value = -45.0
+max_value = 45.0
+step = 0.1
+suffix = "deg"
+
+[node name="Label_CenterHillHeight" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Center hill (sinc) height:"
+
+[node name="SpinBox_CenterHillHeight" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+suffix = "m"
+
+[node name="Label_CenterHillPeriod" type="Label" parent="Terrain/GridContainer"]
+layout_mode = 2
+text = "Center hill (sinc) period:
+"
+
+[node name="SpinBox_CenterHillPeriod" type="SpinBox" parent="Terrain/GridContainer"]
+layout_mode = 2
+min_value = 100.0
+max_value = 10000.0
+step = 100.0
+value = 1000.0
+suffix = "m"
+
 [node name="UDP" type="Panel" parent="."]
+visible = false
 layout_mode = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="UDP"]

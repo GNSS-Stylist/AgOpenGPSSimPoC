@@ -46,7 +46,11 @@ func loadConfig():
 	$Machine/VBoxContainer_Visibilities/CheckBox_CrosshairVisible.button_pressed = config.get_value("Visibility", "TractorCrosshair", false)
 
 	$Terrain/GridContainer/SpinBox_RandomSeed.value = config.get_value("Terrain", "RandomSeed", 3)
-	$Terrain/GridContainer/SpinBox_HeightMultiplier.value = config.get_value("Terrain", "HeightMultiplier", 50)
+	$Terrain/GridContainer/SpinBox_HeightMultiplier_Noise.value = config.get_value("Terrain", "HeightMultiplier_Noise", 50)
+	$Terrain/GridContainer/SpinBox_Slope_North.value = config.get_value("Terrain", "Slope_North", 0)
+	$Terrain/GridContainer/SpinBox_Slope_East.value = config.get_value("Terrain", "Slope_East", 0)
+	$Terrain/GridContainer/SpinBox_CenterHillHeight.value = config.get_value("Terrain", "CenterHillHeight", 0)
+	$Terrain/GridContainer/SpinBox_CenterHillPeriod.value = config.get_value("Terrain", "CenterHillPeriod", 1000)
 
 	$UDP/VBoxContainer/GridContainer/SpinBox_IP_1.value = config.get_value("UDP", "Subnet_1", 192)
 	$UDP/VBoxContainer/GridContainer/SpinBox_IP_2.value = config.get_value("UDP", "Subnet_2", 168)
@@ -86,7 +90,11 @@ func saveConfig():
 	config.set_value("Visibility", "TractorCrosshair", $Machine/VBoxContainer_Visibilities/CheckBox_CrosshairVisible.button_pressed)
 
 	config.set_value("Terrain", "RandomSeed", $Terrain/GridContainer/SpinBox_RandomSeed.value)
-	config.set_value("Terrain", "HeightMultiplier", $Terrain/GridContainer/SpinBox_HeightMultiplier.value)
+	config.set_value("Terrain", "HeightMultiplier_Noise", $Terrain/GridContainer/SpinBox_HeightMultiplier_Noise.value)
+	config.set_value("Terrain", "Slope_North", $Terrain/GridContainer/SpinBox_Slope_North.value)
+	config.set_value("Terrain", "Slope_East", $Terrain/GridContainer/SpinBox_Slope_East.value)
+	config.set_value("Terrain", "CenterHillHeight", $Terrain/GridContainer/SpinBox_CenterHillHeight.value)
+	config.set_value("Terrain", "CenterHillPeriod", $Terrain/GridContainer/SpinBox_CenterHillPeriod.value)
 	
 	config.set_value("Visibility", "Show3rdPartyCreditsOnStart", show3rdPartyCreditsOnStart)
 

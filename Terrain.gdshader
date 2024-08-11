@@ -2,8 +2,8 @@ shader_type spatial;
 
 render_mode cull_disabled;
 
-uniform sampler2D heightmap : repeat_disable;
-uniform float heightMultiplier = 1.0;
+uniform sampler2D heightmap : repeat_disable, filter_nearest;
+//uniform float heightMultiplier = 1.0;
 //uniform vec4 insideFieldAlbedo : source_color = vec4(1.0);
 //uniform vec4 outsideFieldAlbedo : source_color = vec4(1.0);
 uniform sampler2D terrainTexture;
@@ -12,14 +12,15 @@ uniform vec2 terrainTextureScale = vec2(10.0);
 //uniform float fieldRadius = 0.1;
 uniform float gridDist = 0.01;
 uniform float gridWidth = 0.02;
-uniform float edgeRise = 100.0;
+//uniform float edgeRise = 100.0;
 
 void vertex() {
-	VERTEX.y += texture(heightmap, UV).r * heightMultiplier;
-	if ((UV.x < 0.001) || (UV.x > 0.999) || (UV.y < 0.001) || (UV.y > 0.999)) {
-		VERTEX.y += edgeRise;
+//	VERTEX.y += texture(heightmap, vec2(0.005, 0.005) + 0.99 * UV).r;
+	VERTEX.y += texture(heightmap, UV).r;
+//	if ((UV.x < 0.001) || (UV.x > 0.999) || (UV.y < 0.001) || (UV.y > 0.999)) {
+//		VERTEX.y += edgeRise;
 //		UV = vec2(0.0, 0.0);
-	}
+//	}
 }
 
 void fragment() {
