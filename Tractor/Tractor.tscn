@@ -1,7 +1,7 @@
 [gd_scene load_steps=25 format=3 uid="uid://bpvvyk6546855"]
 
 [ext_resource type="PackedScene" uid="uid://bpl3kgkfi7gse" path="res://Assets/Models/Tractor/Tractor_Wheeless_gltf/Tractor_Wheeless.gltf" id="1_lulf2"]
-[ext_resource type="Script" path="res://Tractor/Tractor.gd" id="1_p1t78"]
+[ext_resource type="Script" uid="uid://1ywp48kr46da" path="res://Tractor/Tractor.gd" id="1_p1t78"]
 [ext_resource type="PackedScene" uid="uid://caffw3mhybpw4" path="res://Tractor/FrontWheel_Left.tscn" id="2_6cc24"]
 [ext_resource type="PackedScene" uid="uid://b4d3eeuxnarcq" path="res://Tractor/FrontWheel_Right.tscn" id="3_2bmak"]
 [ext_resource type="PackedScene" uid="uid://c135krm31oi4a" path="res://Tractor/RearWheel_Left.tscn" id="4_aqjm6"]
@@ -81,10 +81,6 @@ mass = 7000.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0)
 script = ExtResource("1_p1t78")
-implementWidth = null
-implementColliding = null
-implementVisible = null
-crosshairVisible = null
 
 [node name="GNSSAntenna" parent="." instance=ExtResource("9_b1jae")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 2.9, -1.39)

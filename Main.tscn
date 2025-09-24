@@ -1,13 +1,13 @@
 [gd_scene load_steps=34 format=3 uid="uid://dssecwmc05qlq"]
 
-[ext_resource type="Script" path="res://Main.gd" id="1_5mcwj"]
-[ext_resource type="Shader" path="res://Terrain.gdshader" id="2_qqamv"]
+[ext_resource type="Script" uid="uid://4l0ne16uua6f" path="res://Main.gd" id="1_5mcwj"]
+[ext_resource type="Shader" uid="uid://b40go1fy7587w" path="res://Terrain.gdshader" id="2_qqamv"]
 [ext_resource type="PackedScene" uid="uid://be3msxv4st7e1" path="res://FirstPersonFlyer/FirstPersonFlyer.tscn" id="3_82cgc"]
 [ext_resource type="Texture2D" uid="uid://cd625u6i65jr0" path="res://Assets/Fields_4096x4096.png" id="3_h3exi"]
 [ext_resource type="PackedScene" uid="uid://lu5qhovxhghx" path="res://Tractor_Old/Tractor_Old.tscn" id="4_tsqja"]
 [ext_resource type="Texture2D" uid="uid://f3chvlcfcce1" path="res://GreenCheckerboard.png" id="5_7utf1"]
 [ext_resource type="PackedScene" uid="uid://bpvvyk6546855" path="res://Tractor/Tractor.tscn" id="7_4dsvj"]
-[ext_resource type="Script" path="res://Camera_Follow.gd" id="8_sbtcx"]
+[ext_resource type="Script" uid="uid://p5r7tm41ex2d" path="res://Camera_Follow.gd" id="8_sbtcx"]
 [ext_resource type="PackedScene" uid="uid://cwve0aixwkq2u" path="res://Settings/SettingsWindowContents.tscn" id="9_4p8ky"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_jlbij"]
@@ -49,18 +49,18 @@ noise = SubResource("FastNoiseLite_jlbij")
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_00ssp"]
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_vtqow"]
-seamless = true
 noise = SubResource("FastNoiseLite_00ssp")
+seamless = true
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_77m2g"]
 render_priority = 0
 shader = ExtResource("2_qqamv")
-shader_parameter/terrainTextureScale = Vector2(10, 10)
-shader_parameter/gridDist = 0.01
-shader_parameter/gridWidth = 0.02
 shader_parameter/heightmap = SubResource("NoiseTexture2D_dnqro")
 shader_parameter/terrainTexture = SubResource("NoiseTexture2D_vtqow")
 shader_parameter/fieldsTexture = ExtResource("3_h3exi")
+shader_parameter/terrainTextureScale = Vector2(10, 10)
+shader_parameter/gridDist = 0.01
+shader_parameter/gridWidth = 0.02
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_hg4uv"]
 size = Vector2(1000, 1000)
@@ -597,6 +597,25 @@ offset_right = 0.0
 offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
+current_tab = 0
+
+[node name="General" parent="Window_Settings/TabContainer_Settings" index="1"]
+metadata/_tab_index = 0
+
+[node name="Controls" parent="Window_Settings/TabContainer_Settings" index="2"]
+metadata/_tab_index = 1
+
+[node name="SteerSettings" parent="Window_Settings/TabContainer_Settings" index="3"]
+metadata/_tab_index = 2
+
+[node name="Machine" parent="Window_Settings/TabContainer_Settings" index="4"]
+metadata/_tab_index = 3
+
+[node name="Terrain" parent="Window_Settings/TabContainer_Settings" index="5"]
+metadata/_tab_index = 4
+
+[node name="UDP" parent="Window_Settings/TabContainer_Settings" index="6"]
+metadata/_tab_index = 5
 
 [connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_HIDAngle" to="." method="_on_h_slider_hid_angle_value_changed"]
 [connection signal="value_changed" from="Panel_Controls/VBoxContainer_Controls/GridContainer_Sliders/HSlider_TargetSpeed" to="." method="_on_h_slider_target_speed_value_changed"]
