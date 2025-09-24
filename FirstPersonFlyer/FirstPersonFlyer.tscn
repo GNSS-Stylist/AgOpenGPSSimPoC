@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=3 uid="uid://be3msxv4st7e1"]
 
-[ext_resource type="Script" path="res://FirstPersonFlyer/FirstPersonFlyer.gd" id="1_0cyb0"]
-[ext_resource type="Script" path="res://FirstPersonFlyer/Crosshair.gd" id="2_col12"]
+[ext_resource type="Script" uid="uid://bpekt8qm6p3mk" path="res://FirstPersonFlyer/FirstPersonFlyer.gd" id="1_0cyb0"]
+[ext_resource type="Script" uid="uid://dawau8h85nsk2" path="res://FirstPersonFlyer/Crosshair.gd" id="2_col12"]
 [ext_resource type="Texture2D" uid="uid://bw0mry6gijxh8" path="res://FirstPersonFlyer/Crosshair.png" id="4_6aj0l"]
 
 [sub_resource type="CapsuleShape3D" id="1"]

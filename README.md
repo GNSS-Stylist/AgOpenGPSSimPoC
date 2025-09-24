@@ -8,7 +8,7 @@ https://youtu.be/OvIh3iD0RC8
 
 Uses Godot game engine (and it's physics engine) to simulate tractor's behavior in a virtual world. Steering commands are received from and latitude/longitude/height/heading/roll/etc are sent to AgOpenGPS (or actually AgIO) using UDP-protocol. From the AgOpenGPS' (AgIO's) perspective this basically emulates All-In-One-board's (V4.1) UDP-communication as implemented in teensy-code. This emulation, however, implements only minimum set of features to get this working somehow (as this is just a PoC after all).
 
-Made with Godot version 4.2.1, which you can download here: https://godotengine.org/download/archive/4.2.1-stable/ This should be multi-platform (apart from the force feedback support) but I have only more thoroughly tested this in windows 10 for now. I couldn't get steering wheel force feedback working on Linux (only tested this quite quickly in Mint), but it should be possible.
+Made with Godot version 4.5, which you can download here: https://godotengine.org/download/archive/4.5-stable/ This should be multi-platform (apart from the force feedback support) but I have only more thoroughly tested this in windows 10 and Linux (Mint) for now.
 
 Requirements should not be very high, I'd guess any mid-range laptop manufactured during the last 5 years or so should probably be enough to run this. Standard-version ( https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/main ) needs vulkan, but there is a lighther version using OpenGL-renderer on another branch: https://github.com/GNSS-Stylist/AgOpenGPSSimPoC/tree/OpenGL_renderer .
 
