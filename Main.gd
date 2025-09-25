@@ -92,7 +92,7 @@ func updateTerrain():
 	for i in range (heightMapImage.get_width()):
 		# North / south walls
 		data[i] += terrainEdgeRise
-		data[i + ((heightMapImage.get_width() - 1) * (heightMapImage.get_height()) - 1)] += terrainEdgeRise
+		data[i + (heightMapImage.get_width() * ((heightMapImage.get_height() - 1)))] += terrainEdgeRise
 	for i in range(1, (heightMapImage.get_height()) - 1):
 		# West / east walls
 		data[i * heightMapImage.get_width()] += terrainEdgeRise
